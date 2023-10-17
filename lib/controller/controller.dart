@@ -12,7 +12,10 @@ class Controller extends ChangeNotifier {
   String? todate;
   bool isLoading = false;
   List<Map<String, dynamic>> dashboard_report = [];
-  List<Map<String, dynamic>> dashboard_report_val = [];
+  var result1 = <String, List<Map<String, dynamic>>>{};
+  List<Map<String, dynamic>> report_tile_val = [];
+  List<Map<String, dynamic>> result = [];
+
   /////////////////////////////////////////////
   setDate(String date1, String date2) {
     fromDate = date1;
@@ -28,18 +31,25 @@ class Controller extends ChangeNotifier {
     NetConnection.networkConnection(context).then((value) async {
       if (value == true) {
         try {
+          isLoading = true;
+          notifyListeners();
           var res = await SqlConn.readData("Flt_Load_Home '0'");
           print("response map--------$res");
           var valueMap = json.decode(res);
           print("response valueMap--------$valueMap");
           dashboard_report.clear();
-          dashboard_report_val.clear();
+          result.clear();
           for (var item in valueMap) {
             if (item["Rpt_Type"] == 0) {
-              dashboard_report.add(item);
-              getDashboardTileVal(context, item["Rpt_Script"], item["Rpt_ID"]);
-            } else {}
+              getDashboardTileVal(context, item["Rpt_Script"], item);
+            } else {
+              result.add(item);
+              // getReportTileVal(context, item["Rpt_Script"], item);
+            }
           }
+          groupByName(result);
+          isLoading = false;
+
           notifyListeners();
         } catch (e) {
           print(e);
@@ -51,17 +61,18 @@ class Controller extends ChangeNotifier {
   }
 
   ////////////////////////////////////////////////////////////
-  getDashboardTileVal(BuildContext context, String sp, int rpt_id) {
+  getDashboardTileVal(
+      BuildContext context, String sp, Map<String, dynamic> item) {
     NetConnection.networkConnection(context).then((value) async {
       if (value == true) {
         try {
           var res = await SqlConn.readData("$sp '0','1'");
           print("dashboard tile val-------$res");
           var valueMap = json.decode(res);
-          Map<String, dynamic> map = {rpt_id.toString(): valueMap};
-          dashboard_report_val.add(map);
+          item["values"] = valueMap;
+          dashboard_report.add(item);
           notifyListeners();
-          print("listt------$dashboard_report_val");
+          print("listt------$dashboard_report");
         } catch (e) {
           print(e);
           // return null;
@@ -70,19 +81,45 @@ class Controller extends ChangeNotifier {
       }
     });
   }
+///////////////////////////////////////////////////////////
 
-  ///////////////////////////////////////
-  getjsonDash(BuildContext context) {
+  void groupByName(var data) {
+    report_tile_val.clear();
+    result1 = <String, List<Map<String, dynamic>>>{};
+    for (var d in data) {
+      print(d);
+      var e = {
+        "Rpt_ID": d["Rpt_ID"]!,
+        "Rpt_Order": d["Rpt_Order"]!,
+        "Rpt_Type": d["Rpt_Type"]!,
+        "Rpt_Group": d["Rpt_Group"]!,
+        "Rpt_Name": d["Rpt_Name"]!,
+        "Rpt_Script": d["Rpt_Script"]!,
+        "Rpt_Key": d["Rpt_Key"]!,
+        "Rpt_MultiDt": d["Rpt_MultiDt"]!,
+        "Rpt_ColorId": d["Rpt_ColorId"]!,
+        "Rpt_ImgID": d["Rpt_ImgID"]!,
+      };
+      var key = d["Rpt_Group"]!;
+      if (result1.containsKey(key)) {
+        result1[key]!.add(e);
+      } else {
+        result1[key] = [e];
+      }
+    }
+    result1.entries.forEach((e) => report_tile_val.add({e.key: e.value}));
+    print("result---${report_tile_val}");
+    print(result);
+  }
+
+  ////////////////////////////////////////////////////////
+  getReportTabledata(BuildContext context, String sp, String param) {
     NetConnection.networkConnection(context).then((value) async {
       if (value == true) {
         try {
-          var res = await SqlConn.readData("Flt_Load_Home1");
-          print("from sp-------$res");
+          var res = await SqlConn.readData("$sp '$param'");
+          print("report table----$res");
           var valueMap = json.decode(res);
-          for (var item in valueMap) {
-            print("djjdff-----$item");
-          }
-          print("listt------$dashboard_report_val");
         } catch (e) {
           print(e);
           // return null;

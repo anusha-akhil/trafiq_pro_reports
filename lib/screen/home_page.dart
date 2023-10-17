@@ -57,9 +57,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       connect(context);
-      // Provider.of<Controller>(context, listen: false).getHome(context);
-      Provider.of<Controller>(context, listen: false).getjsonDash(context);
-
+      Provider.of<Controller>(context, listen: false).getHome(context);
+      // Provider.of<Controller>(context, listen: false).getjsonDash(context);
     });
   }
 
@@ -75,47 +74,62 @@ class _HomePageState extends State<HomePage> {
         title: Text("Company Name"),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              height: size.height * 0.07,
-              // color: Colors.grey[200],
-              color: Theme.of(context).primaryColor,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      "Branch",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
+        child: Consumer<Controller>(
+          builder: (context, value, child) => Column(
+            children: [
+              Container(
+                height: size.height * 0.07,
+                // color: Colors.grey[200],
+                color: Theme.of(context).primaryColor,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        "Branch",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Row(
-                      children: [
-                        Image.asset("assets/left.png",
-                            height: size.height * 0.021, color: Colors.yellow),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 8),
-                          child: Text(
-                            "Date",
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Row(
+                        children: [
+                          Image.asset("assets/left.png",
+                              height: size.height * 0.021,
+                              color: Colors.yellow),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0, right: 8),
+                            child: Text(
+                              "Date",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16),
+                            ),
                           ),
-                        ),
-                        Image.asset("assets/right.png",
-                            height: size.height * 0.021, color: Colors.yellow),
-                      ],
-                    ),
-                  )
-                ],
+                          Image.asset("assets/right.png",
+                              height: size.height * 0.021,
+                              color: Colors.yellow),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-            DashboardReport(),
-            ReportTabs()
-          ],
+              Divider(
+                thickness: 1,
+                color: Colors.white,
+                // height: 25,  
+              ),
+              value.isLoading
+                  ? Center(
+                      child: SpinKitCircle(
+                      color: Colors.white,
+                    ))
+                  : DashboardReport(),
+              ReportTabs()
+            ],
+          ),
         ),
       ),
     );

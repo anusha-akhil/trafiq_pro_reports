@@ -7,9 +7,8 @@ import 'package:trafiqpro/components/date_find.dart';
 import '../../controller/controller.dart';
 
 class ReportDetails {
-  Future viewData(
-    BuildContext context,
-  ) {
+  Future viewData(BuildContext context, Map<String, dynamic> map) {
+    print("map-----$map");
     DateFind dateFind = DateFind();
     String? todaydate;
     DateTime now = DateTime.now();
@@ -21,13 +20,14 @@ class ReportDetails {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
+            backgroundColor: Color.fromARGB(255, 250, 186, 90),
             contentPadding: EdgeInsets.all(8),
             insetPadding: EdgeInsets.all(8),
             //  backgroundColor: Colors.grey[200],
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Report Details'),
+                Text(map["Rpt_Name"],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 19),),
                 InkWell(
                     onTap: () {
                       Navigator.pop(context);
@@ -48,6 +48,9 @@ class ReportDetails {
                     width: width,
                     child: Column(
                       children: [
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
                         Container(
                           decoration: BoxDecoration(color: Colors.grey[200]),
                           height: size.height * 0.2,
@@ -231,7 +234,7 @@ class ReportDetails {
                                       ),
                                       Flexible(
                                           child: Container(
-                                            margin: EdgeInsets.only(top: 10),
+                                        margin: EdgeInsets.only(top: 10),
                                         height: size.height * 0.05,
                                         child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
@@ -249,8 +252,7 @@ class ReportDetails {
                                               if (value.fromDate == null) {
                                                 df = todaydate.toString();
                                               } else {
-                                                df =
-                                                    value.fromDate.toString();
+                                                df = value.fromDate.toString();
                                               }
                                               if (value.todate == null) {
                                                 tf = todaydate.toString();
@@ -266,6 +268,8 @@ class ReportDetails {
                                     ],
                                   ),
                                 ),
+
+                                // Container(child: DataTable(columns: ], rows: rows),)
                               ],
                             ),
                           ),
