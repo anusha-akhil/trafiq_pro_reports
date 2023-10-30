@@ -44,6 +44,7 @@ class _HomePageState extends State<HomePage> {
           username: "sa",
           password: "##v0e3g9a#");
       debugPrint("Connected!");
+      Provider.of<Controller>(context, listen: false).getHome(context);
     } catch (e) {
       debugPrint(e.toString());
     } finally {
@@ -57,7 +58,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       connect(context);
-      Provider.of<Controller>(context, listen: false).getHome(context);
       // Provider.of<Controller>(context, listen: false).getjsonDash(context);
     });
   }
@@ -71,7 +71,10 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text("Company Name"),
+        title: Text(
+          "Company Name",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: SingleChildScrollView(
         child: Consumer<Controller>(
@@ -119,7 +122,7 @@ class _HomePageState extends State<HomePage> {
               Divider(
                 thickness: 1,
                 color: Colors.white,
-                // height: 25,  
+                // height: 25,
               ),
               value.isLoading
                   ? Center(

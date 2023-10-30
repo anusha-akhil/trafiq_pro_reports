@@ -18,11 +18,11 @@ class DateFind {
   String? gen_condition;
 
   Future selectDateFind(BuildContext context, String dateType) async {
-    crntDateFormat = DateFormat('dd-MM-yyyy').format(currentDate);
+    crntDateFormat = DateFormat('dd-MMM-yyyy').format(currentDate);
     final DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
-        firstDate: DateTime(2020),
+        firstDate: DateTime(2020),  
         lastDate: DateTime(currentDate.year + 1),
         builder: (BuildContext context, Widget? child) {
           return Theme(
@@ -42,15 +42,18 @@ class DateFind {
 
     if (dateType == "from date") {
       print("curnt date----$currentDate");
-      fromDate = DateFormat('dd-MM-yyyy').format(currentDate);
+      fromDate = DateFormat('dd-MMM-yyyy').format(currentDate);
+      // fromDate = DateFormat(DateFormat.YEAR_ABBR_MONTH_DAY).format(currentDate);
+      // fromDate = DateFormat(DateFormat.).format(currentDate);
+
       if (toDate == null) {
-        toDate = DateFormat('dd-MM-yyyy').format(defaultDate);
+        toDate =DateFormat('dd-MMM-yyyy').format(defaultDate);
       }
     }
     if (dateType == "to date") {
-      toDate = DateFormat('dd-MM-yyyy').format(currentDate);
+      toDate = DateFormat('dd-MMM-yyyy').format(currentDate);
       if (fromDate == null) {
-        fromDate = DateFormat('dd-MM-yyyy').format(defaultDate);
+        fromDate = DateFormat('dd-MMM-yyyy').format(defaultDate);
       }
     }
     print("fromdate-----$fromDate---$toDate");

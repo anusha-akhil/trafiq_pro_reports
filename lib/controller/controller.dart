@@ -1,21 +1,28 @@
-import 'dart:async';
 import 'dart:convert';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sql_conn/sql_conn.dart';
+import 'package:trafiqpro/components/popups/level2_report_data.dart';
+import 'package:trafiqpro/components/popups/level3_report.dart';
 import '../components/network_connectivity.dart';
 
 class Controller extends ChangeNotifier {
   String? fromDate;
+  var jsonEncoded;
   String? todate;
+  List<TextEditingController> listEditor = [];
+  Map<String, dynamic> levelCriteria = {};
   bool isLoading = false;
+  bool isReportLoading = false;
+
   List<Map<String, dynamic>> dashboard_report = [];
   var result1 = <String, List<Map<String, dynamic>>>{};
   List<Map<String, dynamic>> report_tile_val = [];
   List<Map<String, dynamic>> result = [];
-
+  List<Map<String, dynamic>> sub_report = [];
+  List<Map<String, dynamic>> report_data = [];
+  Map<String, dynamic> sub_report_data = {};
+  var sub_report_json;
   /////////////////////////////////////////////
   setDate(String date1, String date2) {
     fromDate = date1;
@@ -113,13 +120,121 @@ class Controller extends ChangeNotifier {
   }
 
   ////////////////////////////////////////////////////////
-  getReportTabledata(BuildContext context, String sp, String param) {
+  getReportTabledata(
+      BuildContext context, String sp, String date1, String date2, String key) {
     NetConnection.networkConnection(context).then((value) async {
       if (value == true) {
         try {
-          var res = await SqlConn.readData("$sp '$param'");
+          isReportLoading = true;
+          notifyListeners();
+          print("parameters--------------$sp-----$date1,$date2");
+          var res = await SqlConn.readData("$sp '0','1',$date1,$date2");
           print("report table----$res");
           var valueMap = json.decode(res);
+          print("value map----$valueMap");
+          report_data.clear();
+          for (var item in valueMap) {
+            report_data.add(item);
+          }
+          jsonEncoded = jsonEncode(report_data);
+          isReportLoading = false;
+          notifyListeners();
+        } catch (e) {
+          print(e);
+          // return null;
+          return [];
+        }
+      }
+    });
+  }
+
+/////////////////////////////////////////////////////////////////
+  getSubReport(BuildContext context, int rptId) {
+    NetConnection.networkConnection(context).then((value) async {
+      if (value == true) {
+        try {
+          print("rprttt-Id----$rptId");
+          var res = await SqlConn.readData("Flt_SubReport '0','1', $rptId");
+          var map = jsonDecode(res);
+          sub_report.clear();
+          for (var item in map) {
+            sub_report.add(item);
+          }
+          print("sub report----$sub_report");
+          notifyListeners();
+        } catch (e) {
+          print(e);
+          // return null;
+          return [];
+        }
+      }
+    });
+  }
+
+  /////////////////////////////////////////////////////////////
+  findLevelCriteria(
+    BuildContext context,
+    int level,
+    int index,
+  ) {
+    print("level-----$level");
+    levelCriteria = {};
+    if (sub_report.isNotEmpty) {
+      for (var item in sub_report) {
+        if (item["Sub_Order"] == level) {
+          levelCriteria = item;
+        }
+      }
+
+      // getReportTabledata(context, levelCriteria["Sub_Script"], "");
+      getSubreportData(context, levelCriteria["Sub_Script"],
+          fromDate.toString(), todate.toString(), levelCriteria["Sub_Key"]);
+      if (level == 1) {
+        Level2ReportDetails popup = Level2ReportDetails();
+        popup.viewData(context, levelCriteria, index);
+      } else if (level == 2) {
+        Level3ReportDetails popup = Level3ReportDetails();
+        popup.viewData(context, levelCriteria, level, index);
+      }
+    }
+    print("levelcriteria--------$levelCriteria");
+    notifyListeners();
+  }
+
+  /////////////////////////////////////////////////////////////
+  getSubreportData(
+      BuildContext context, String sp, String date1, String date2, String key) {
+    NetConnection.networkConnection(context).then((value) async {
+      print("parameters----------------$sp-----$date1----$date2----$key");
+      if (value == true) {
+        try {
+          sub_report_data = {
+            "id": "3",
+            "title": "SALES",
+            "graph": "0",
+            "sum": "NY",
+            "align": 'LR',
+            "width": "60,40",
+            "search": "0",
+            "data": [
+              {"name": "anusha", 'VALUE': "0"},
+              {"name": "anugraha", "VALUE": "0"},
+              {"name": "danush", "VALUE": "0"},
+              {"name": "shilpa", "VALUE": "0"},
+              {"name": "anil", 'VALUE': "0"},
+            ]
+          };
+          sub_report_json = jsonEncode(sub_report_data);
+
+          // print("rprttt-Id----$sp");
+          // var res = await SqlConn.readData("$sp '0','1', $date1, $date2, $key");
+          // var map = jsonDecode(res);
+          // sub_report_data.clear();
+          // for (var item in map) {
+          //   sub_report_data.add(item);
+          // }
+          print("sub_report_data---$sub_report_data");
+          notifyListeners();
         } catch (e) {
           print(e);
           // return null;

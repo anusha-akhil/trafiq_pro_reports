@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../components/popups/rp_detail.dart';
+import '../components/popups/level1_rp_detail.dart';
 import '../controller/controller.dart';
 
 class ReportTabs extends StatefulWidget {
@@ -27,12 +26,12 @@ class _ReportTabsState extends State<ReportTabs> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Text(
                   value.report_tile_val[index].keys.first,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       color: Colors.blue),
@@ -53,28 +52,21 @@ class _ReportTabsState extends State<ReportTabs> {
                       [value.report_tile_val[index].keys.first];
                   return InkWell(
                     onTap: () {
-                      value.getReportTabledata(
-                          context, list[ind]["Rpt_Script"], "12-2-2013");
-                      ReportDetails popup = ReportDetails();
-                      popup.viewData(context, list[ind]);
+                      print("jhjhdsbd------${list[ind]}");
+                      value.getSubReport(context, list[ind]["Rpt_ID"]);
+                      value.report_data.clear();
+                      value.todate = null;
+                      value.fromDate = null;
+                      Level1ReportDetails popup = Level1ReportDetails();
+                      popup.viewData(context, list[ind], ind);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
-                            color: Color.fromARGB(221, 73, 73, 73)
-                            //   gradient: LinearGradient(
-                            // begin: Alignment.topRight,
-                            // end: Alignment.bottomLeft,
-                            // colors: [
-                            //   Color.fromARGB(255, 90, 89, 89),
-                            //   // Colors.white,
-                            // ],
-                            // )
-                            ),
+                            color: Color.fromARGB(221, 73, 73, 73)),
                         height: size.height * 0.05,
-                        // width: size.width * 0.3,
                         child: Padding(
                           padding: const EdgeInsets.all(26.0),
                           child: Column(
@@ -82,7 +74,7 @@ class _ReportTabsState extends State<ReportTabs> {
                             children: [
                               Text(
                                 list[ind]["Rpt_Name"],
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white70),
                               ),

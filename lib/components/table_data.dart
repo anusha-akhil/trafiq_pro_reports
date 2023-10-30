@@ -1,402 +1,334 @@
-// import 'dart:convert';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../controller/controller.dart';
 
-// import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
+class TableData extends StatefulWidget {
+  var decodd;
+  int index;
+  String keyVal;
+  double popuWidth;
+  int level;
+  TableData(
+      {required this.decodd,
+      required this.index,
+      required this.keyVal,
+      required this.popuWidth,
+      required this.level});
 
-// import '../controller/controller.dart';
+  @override
+  State<TableData> createState() => _TableDataState();
+}
 
-// class TableData extends StatefulWidget {
-//   var decodd;
-//   int index;
-//   String keyVal;
-//   TableData({required this.decodd, required this.index, required this.keyVal});
+class _TableDataState extends State<TableData> {
+  String? key;
+  int _currentSortColumn = 0;
+  bool _isSortAsc = true;
+  // DetailedInfoSheet info = DetailedInfoSheet();
+  List<dynamic> mapTabledata = [];
+  List<String> tableColumn = [];
+  Map<String, dynamic> valueMap = {};
+  List<Map<dynamic, dynamic>> newMp = [];
+  List<Map<dynamic, dynamic>> filteredList = [];
+  List<dynamic> rowMap = [];
+  double? datatbleWidth;
+  final ScrollController _scrollController = ScrollController();
+  @override
+  void initState() {
+    print("shrinked   mapTabledata---${widget.decodd}");
 
-//   @override
-//   State<TableData> createState() => _TableDataState();
-// }
+    super.initState();
+    if (widget.decodd != null) {
+      mapTabledata = json.decode(widget.decodd);
+    } else {
+      print("null");
+    }
+    rowMap = mapTabledata;
+    mapTabledata[0].forEach((key, value) {
+      tableColumn.add(key);
+    });
 
-// class _TableDataState extends State<TableData> {
-//   String? key;
-//   int _currentSortColumn = 0;
-//   bool _isSortAsc = true;
-//   // DetailedInfoSheet info = DetailedInfoSheet();
-//   Map<String, dynamic> mapTabledata = {};
-//   List<String> tableColumn = [];
-//   Map<String, dynamic> valueMap = {};
-//   List<Map<dynamic, dynamic>> newMp = [];
-//   List<Map<dynamic, dynamic>> filteredList = [];
-//   List<dynamic> rowMap = [];
-//   double? datatbleWidth;
-//   final ScrollController _scrollController = ScrollController();
-//   @override
-//   void initState() {
-//     // TODO: implement initState
-//     super.initState();
-//     if (widget.decodd != null) {
-//       mapTabledata = json.decode(widget.decodd);
-//       print("shrinked   mapTabledata---${mapTabledata}");
-//     } else {
-//       print("null");
-//     }
-//     rowMap = mapTabledata["data"];
-//     mapTabledata["data"][0].forEach((key, value) {
-//       tableColumn.add(key);
-//     });
-//     newMp.clear();
-//     filteredList.clear();
-//     calculateSum(mapTabledata["data"], mapTabledata["data"][0].length,
-//         mapTabledata["sum"]);
-//     rowMap.forEach((element) {
-//       print("element-----$element");
-//       newMp.add(element);
-//       filteredList.add(element);
-//     });
-//     print("newMp---${newMp}");
-//     // key = newMp[0].keys.toList().first;
-//     if (widget.keyVal != "0") {
-//       int ele = int.parse(widget.keyVal) - 1;
-//       key = newMp[0].keys.elementAt(ele);
-//     }
-//   }
+    print("tablecolumn-----$tableColumn");
+    newMp.clear();
+    filteredList.clear();
+    calculateSum(mapTabledata, tableColumn);
+    rowMap.forEach((element) {
+      print("element-----$element");
+      newMp.add(element);
+      filteredList.add(element);
+    });
+    print("newMp---${newMp}");
+    // key = newMp[0].keys.toList().first;
+    if (widget.keyVal != "0") {
+      int ele = int.parse(widget.keyVal) - 1;
+      key = newMp[0].keys.elementAt(ele);
+    }
+  }
 
-// //////////////////////////////////////////////////////////////////////////////
-//   Widget build(BuildContext context) {
-//     // FocusScope.of(context).requestFocus(FocusNode());
+//////////////////////////////////////////////////////////////////////////////
+  Widget build(BuildContext context) {
+    // FocusScope.of(context).requestFocus(FocusNode());
 
-//     Size size = MediaQuery.of(context).size;
-//     datatbleWidth = size.width * 0.95;
-//     print(
-//         "screen width-----${size.width}------datatble width-----$datatbleWidth");
-//     return Center(
-//       child: Container(
-//         // alignment: Alignment.center,
-//         width: datatbleWidth,
-//         child: Scrollbar(
-//           controller: _scrollController,
-//           child: Consumer<Controller>(
-//             builder: (context, value, child) => Column(
-//               children: [
-//                 widget.keyVal == "0"
-//                     ? Container()
-//                     : Padding(
-//                         padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-//                         child: Container(
-//                           height: size.height * 0.05,
-//                           // width: 200,
-//                           // margin: EdgeInsets.only(left: 3, right:3),
-//                           child: TextFormField(
-//                             controller: value.listEditor[widget.index],
-//                             //   decoration: const InputDecoration(,
-//                             onChanged: (value) {
-//                               setState(() {
-//                                 // String key = newMp[0].keys.toList().first;
-//                                 // print(newMp[0].keys.toList().first);
-//                                 print("nw----${newMp[0].keys.toList().first}");
-//                                 filteredList = value.isEmpty ||
-//                                         value == null ||
-//                                         value == " "
-//                                     ? newMp
-//                                     : newMp
-//                                         .where((item) => item[key]
-//                                                 .toLowerCase()
-//                                                 .startsWith(value.toLowerCase())
-//                                             //     ||
-//                                             // item['VALUE']
-//                                             //     .toLowerCase()
-//                                             //     .contains(text.toLowerCase())
+    Size size = MediaQuery.of(context).size;
+    datatbleWidth = widget.popuWidth - 30;
+    print(
+        "screen width-----${size.width}------datatble width-----$datatbleWidth");
+    return Container(
+      // height: size.height*0.6,
+      width: datatbleWidth,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: DataTable(
+          showCheckboxColumn: false,
+          columnSpacing: 7,
+          headingRowHeight: 45,
+          dataRowHeight: 38,
+          horizontalMargin: 5,
 
-//                                             )
-//                                         .toList();
-//                                 print("after filter-------$newMp");
-//                               });
-//                             },
-//                             decoration: InputDecoration(
-//                                 prefixIcon: Icon(
-//                                   Icons.search,
-//                                   color: Colors.blue,
-//                                 ),
-//                                 contentPadding: EdgeInsets.symmetric(
-//                                     horizontal: 10, vertical: 0),
-//                                 border: OutlineInputBorder(
-//                                   borderRadius: BorderRadius.circular(10.0),
-//                                   borderSide: const BorderSide(
-//                                       color: Color.fromARGB(255, 128, 125, 125),
-//                                       width: 0.0),
-//                                 ),
-//                                 focusedBorder: OutlineInputBorder(
-//                                   borderRadius: BorderRadius.circular(10.0),
-//                                   borderSide: const BorderSide(
-//                                       color: Color.fromARGB(255, 128, 125, 125),
-//                                       width: 0.0),
-//                                 ),
-//                                 enabledBorder: OutlineInputBorder(
-//                                   borderRadius: BorderRadius.circular(10.0),
-//                                   borderSide: BorderSide(
-//                                       color: Color.fromARGB(255, 128, 125, 125),
-//                                       width: 0.0),
-//                                 ),
-//                                 filled: true,
-//                                 hintStyle:
-//                                     TextStyle(color: Colors.blue, fontSize: 13),
-//                                 hintText: "Search $key here.. ",
-//                                 fillColor: Colors.grey[100]),
-//                           ),
-//                         ),
-//                       ),
-//                 Padding(
-//                   padding: const EdgeInsets.only(bottom: (8.0)),
-//                   child: DataTable(
-//                     showCheckboxColumn: false,
-//                     columnSpacing: 7,
-//                     headingRowHeight: 40,
-//                     dataRowHeight: 35,
-//                     horizontalMargin: 5,
-//                     // sortColumnIndex: _currentSortColumn,
-//                     // sortAscending: _isSortAsc,
-//                     // decoration: BoxDecoration(color: P_Settings.bar1Color),
-//                     // border: TableBorder.all(
-//                     //   color: P_Settings.bar1Color,
-//                     // ),
-//                     // headingRowColor:MaterialStateProperty.all(Color.fromARGB(255, 238, 236, 236)) ,
-//                     columns: getColumns(tableColumn, mapTabledata["align"],
-//                         mapTabledata["width"], mapTabledata["sum"]),
-//                     rows: getRowss(
-//                         filteredList,
-//                         mapTabledata["align"],
-//                         mapTabledata["width"],
-//                         mapTabledata["sum"],
-//                         value.listEditor[widget.index]),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
+          // sortColumnIndex: _currentSortColumn,
+          // sortAscending: _isSortAsc,
+          // decoration: BoxDecoration(color: P_Settings.bar1Color),
+          // border: TableBorder.all(
+          //   color: P_Settings.bar1Color,
+          // ),
+          headingRowColor: MaterialStateProperty.all(Colors.yellow),
+          columns: getColumns(
+            tableColumn,
+          ),
+          rows: getRowss(
+            filteredList,
+          ),
+        ),
+      ),
+    );
+  }
 
-//   ///////////////////////////////////////////////////
-//   List<DataColumn> getColumns(
-//       List<String> columns, String alignment, String width, String sum) {
-//     String behv;
-//     String colsName;
-//     double colwidth = 0.0;
-//     List<DataColumn> datacolumnList = [];
-//     print("alignment --------${rowMap}");
-//     List<String> ws = width.split(',');
+  ///////////////////////////////////////////////////
+  List<DataColumn> getColumns(
+    List<String> columns,
+  ) {
+    double colwidth = 0.0;
+    List<String> columnSplit = [];
+    List<DataColumn> datacolumnList = [];
+    print("columns --------${columns}");
 
-//     for (int i = 0; i < columns.length; i++) {
-//       if (ws.length == 0) {
-//         colwidth = (datatbleWidth! / columns.length);
-//       } else {
-//         colwidth = (datatbleWidth! * double.parse(ws[i]) / 100);
-//       }
-//       colwidth = colwidth * 0.94;
-//       datacolumnList.add(DataColumn(
-//         // onSort: (columnIndex, _) {
-//         //   setState(() {
-//         //     _currentSortColumn = columnIndex;
-//         //     if (_isSortAsc) {
-//         //       newMp.sort((a, b) => b[columns[0]].compareTo(a[columns[0]]));
-//         //     } else {
-//         //       newMp.sort((a, b) => a[columns[0]].compareTo(b[columns[0]]));
-//         //     }
-//         //     _isSortAsc = !_isSortAsc;
-//         //   });
-//         // },
-//         label: ConstrainedBox(
-//           constraints: BoxConstraints(minWidth: colwidth, maxWidth: colwidth),
-//           child: Padding(
-//             padding: EdgeInsets.all(0.0),
-//             child: Text(columns[i].toUpperCase(),
-//                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-//                 textAlign:
-//                     alignment[i] == "L" ? TextAlign.left : TextAlign.right),
-//           ),
-//         ),
-//       ));
-//     }
-//     return datacolumnList;
-//     // return columns.map((String column) {
-//     //   return DataColumn(
-//     //     label: ConstrainedBox(
-//     //       constraints: BoxConstraints(minWidth: 90, maxWidth: 90),
-//     //       child: Padding(
-//     //         padding: EdgeInsets.all(0.0),
-//     //         child: Text(column.toUpperCase(),
-//     //             style: TextStyle(fontSize: 12), textAlign: TextAlign.right),
-//     //       ),
-//     //     ),
-//     //   );
-//     // }).toList();
-//   }
+    for (int i = 0; i < columns.length; i++) {
+      columnSplit = columns[i].split('_');
+      String wid = columns[i].substring(3, 5);
+      print("columnsplit-------${wid}");
+      if (columns.length == 0) {
+        colwidth = (datatbleWidth! / columns.length);
+      } else {
+        colwidth = (datatbleWidth! * double.parse(wid) / 100);
+      }
+      colwidth = colwidth * 0.94;
+      datacolumnList.add(DataColumn(
+        label: ConstrainedBox(
+          constraints: BoxConstraints(minWidth: colwidth, maxWidth: colwidth),
+          child: Padding(
+            padding: EdgeInsets.all(0.0),
+            child: Text(columnSplit[1].toString(),
+                style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
+                textAlign: columnSplit[0][1] == "L"
+                    ? TextAlign.left
+                    : columnSplit[0][1] == "C"
+                        ? TextAlign.center
+                        : TextAlign.right),
+          ),
+        ),
+      ));
+    }
+    return datacolumnList;
+    // return columns.map((String column) {
+    //   return DataColumn(
+    //     label: ConstrainedBox(
+    //       constraints: BoxConstraints(minWidth: 90, maxWidth: 90),
+    //       child: Padding(
+    //         padding: EdgeInsets.all(0.0),
+    //         child: Text(column.toUpperCase(),
+    //             style: TextStyle(fontSize: 12), textAlign: TextAlign.right),
+    //       ),
+    //     ),
+    //   );
+    // }).toList();
+  }
 
-//   ////////////////////////////////////////////////////////////////
-//   List<DataRow> getRowss(List<Map<dynamic, dynamic>> row, String align,
-//       String width, String sum, TextEditingController controller) {
-//     print("rowjsjfkd-----$row");
-//     List<DataRow> items = [];
+  ////////////////////////////////////////////////////////////////
+  List<DataRow> getRowss(
+    List<Map<dynamic, dynamic>> row,
+  ) {
+    print("rowjsjfkd-----$row");
+    List<DataRow> items = [];
 
-//     var itemList = filteredList;
-//     for (var r = 0; r < itemList.length; r++) {
-//       items.add(DataRow(
-//           // onSelectChanged: (selected) {
-//           //   print("selected------$selected");
-//           //   if (selected!) {
-//           //     showModalSheet(itemList[r]);
-//           //   }
-//           // },
-//           // color: r == itemList.length - 1
-//           //     ? controller.text == ""
-//           //         ? MaterialStateProperty.all(P_Settings.sumColor)
-//           //         : MaterialStateProperty.all(P_Settings.rowColor)
-//           //     : MaterialStateProperty.all(P_Settings.rowColor),
-//           cells: getCelle(itemList[r], align, width, sum)));
-//     }
-//     return items;
+    var itemList = filteredList;
+    for (var r = 0; r < itemList.length; r++) {
+      items.add(DataRow(
+          onSelectChanged: (selected) {
+            print("selected------$selected");
+            if (selected!) {
+              Provider.of<Controller>(context, listen: false)
+                  .findLevelCriteria(context, widget.level, r);
+              // LevelReportDetails popup = LevelReportDetails();
+              // popup.viewData(context, itemList[r], r);
+            }
+          },
+          color: r == itemList.length - 1
+              ? MaterialStateProperty.all(Colors.pink)
+              : MaterialStateProperty.all(Colors.black),
 
-//     // return newMp.map((row) {
-//     //   return DataRow(
-//     //     cells: getCelle(row),
-//     //   );
-//     // }).toList();
-//   }
+          //  r % 2 == 0
+          //     ? MaterialStateProperty.all(
+          //         Color.fromARGB(255, 194, 229, 238))
+          //     : MaterialStateProperty.all(
+          //         Color.fromARGB(255, 240, 173, 229)),
+          cells: getCelle(itemList[r])));
+    }
+    return items;
 
-//   //////////////////////////////////////////////////////////////
-//   List<DataCell> getCelle(
-//       Map<dynamic, dynamic> data, String alignment, String width, String sum) {
-//     String behv;
-//     String colsName;
+    // return newMp.map((row) {
+    //   return DataRow(
+    //     cells: getCelle(row),
+    //   );
+    // }).toList();
+  }
 
-//     String? dval;
-//     double colwidth = 0.0;
-//     print("data--$data");
-//     List<DataCell> datacell = [];
-//     List<String> ws = width.split(',');
+  //////////////////////////////////////////////////////////////
+  List<DataCell> getCelle(
+    Map<dynamic, dynamic> data,
+  ) {
+    String behv;
+    String colsName;
 
-//     print("data-------$data");
-//     String text = data.values.elementAt(0);
-//     for (var i = 0; i < tableColumn.length; i++) {
-//       if (ws.length == 0) {
-//         colwidth = (datatbleWidth! / tableColumn.length);
-//       } else {
-//         colwidth = (datatbleWidth! * double.parse(ws[i]) / 100);
-//       }
-//       colwidth = colwidth * 0.94;
-//       data.forEach((key, value) {
-//         if (tableColumn[i] == key) {
-//           if (sum[i] == "Y") {
-//             print("fbfb------${value.runtimeType}");
-//             double d = double.parse(value);
-//             dval = d.toStringAsFixed(2);
-//           } else {
-//             print("ghdhjd---$value");
-//             if (value == null || value.isEmpty || value == " ") {
-//               dval = value;
-//             } else {
-//               RegExp _numeric = RegExp(r'^-?(([0-9]*)|(([0-9]*)\.([0-9]*)))$');
-//               bool isnum = _numeric.hasMatch(value);
-//               print("isnum ----$isnum-----$_numeric");
-//               if (isnum) {
-//                 double d = double.parse(value);
-//                 dval = d.toStringAsFixed(2);
-//               } else {
-//                 dval = value;
-//               }
-//             }
-//             // double d = double.parse(value);
-//             // dval = d.toStringAsFixed(2);
-//           }
-//           datacell.add(
-//             DataCell(
-//               // onTap: () {
+    String? dval;
+    double colwidth = 0.0;
+    print("data--$data");
+    List<DataCell> datacell = [];
+    List<String> columnSplit = [];
 
-//               //   info.showInfoSheet(context, text);
-//               // },
-//               Container(
-//                 constraints:
-//                     BoxConstraints(minWidth: colwidth, maxWidth: colwidth),
-//                 // width: 70,
-//                 alignment: alignment[i] == "L"
-//                     ? Alignment.centerLeft
-//                     : Alignment.centerRight,
-//                 // alignment: Alignment.centerRight,
-//                 child: Padding(
-//                   padding: EdgeInsets.all(0.0),
-//                   // padding: behv[1] == "L"? EdgeInsets.only(left:0.3):EdgeInsets.only(right:0.3),
-//                   child: Text(
-//                     dval.toString(),
-//                     style: TextStyle(fontSize: 14),
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           );
-//         }
-//       });
-//     }
-//     print(datacell.length);
-//     return datacell;
-//   }
+    print("data-------$data");
+    String text = data.values.elementAt(0);
+    for (var i = 0; i < tableColumn.length; i++) {
+      data.forEach((key, value) {
+        if (tableColumn[i] == key) {
+          columnSplit = tableColumn[i].split('_');
+          String wid = tableColumn[i].substring(3, 5);
+          if (tableColumn.length == 0) {
+            colwidth = (datatbleWidth! / tableColumn.length);
+          } else {
+            colwidth = (datatbleWidth! * double.parse(wid) / 100);
+          }
+          colwidth = colwidth * 0.94;
+          print("key from datacell----$key");
+          String text = "";
 
-//   /////////////////////////////////////////////////////////////////////
-//   calculateSum(List<dynamic> element, int c, String isSum) {
-//     Map map = {};
-//     Map finalmap = {};
-//     print("dynamic elemnt-----$element--$isSum");
-//     double sum = 0.0;
-//     String? key;
-//     for (int i = 0; i < c; i++) {
-//       if (isSum[i] == "Y") {
-//         for (int j = 0; j < element.length; j++) {
-//           key = element[j].keys.elementAt(i);
-//           double d = double.parse(element[j].values.elementAt(i));
-//           print("zjsnjzsnd-----${d}");
-//           sum = sum + d;
-//         }
-//         map[key] = sum.toStringAsFixed(2);
-//         sum = 0.0;
-//       } else {
-//         map[element[i].keys.elementAt(i)] = "";
-//       }
-//     }
-//     element.add(map);
-//     print("sum-----$element");
-//   }
+          // if (columnSplit[0][2] == "Y") {
+          //   if (columnSplit[0][0] == "I") {
 
-//   showModalSheet(Map map) {
-//     showModalBottomSheet<void>(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return Column(
-//           // mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             Padding(
-//               padding: const EdgeInsets.only(right: 8.0, top: 8),
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.end,
-//                 children: [
-//                   InkWell(
-//                       onTap: () {
-//                         Navigator.pop(context);
-//                       },
-//                       child: Icon(
-//                         Icons.close,
-//                         color: Colors.red,
-//                       ))
-//                 ],
-//               ),
-//             ),
-//             Text(
-//               map["Supplier"].toString().toUpperCase(),
-//               style: TextStyle(
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//           ],
-//         );
-//       },
-//     );
-//   }
-// }
+          //     dval = value.toString();
+
+          //     print("sjkhfjdf------$dval");
+          //   } else if (columnSplit[0][0] == "C") {
+          //     double d = double.parse(value);
+          //     dval = d.toStringAsFixed(2);
+          //   }else{
+          //     dval=value.toString();
+          //   }
+
+          //   print("dunduu----$dval");
+          // }
+
+          //  else {
+          //   if (value == null || value.isEmpty || value == " ") {
+          //     dval = value;
+          //   } else {
+          //     RegExp _numeric = RegExp(r'^-?(([0-9]*)|(([0-9]*)\.([0-9]*)))$');
+          //     bool isnum = _numeric.hasMatch(value);
+          //     print("isnum ----$isnum-----$_numeric");
+          //     if (isnum) {
+          //       double d = double.parse(value);
+          //       dval = d.toStringAsFixed(2);
+          //     } else {
+          //       dval = value;
+          //     }
+          //   }
+          // }
+
+          if (columnSplit[0][0] == "C") {
+            text = value.toStringAsFixed(2);
+          } else if (columnSplit[0][0] == "I") {
+            text = value.toString();
+          } else {
+            text = value.toString();
+          }
+          datacell.add(
+            DataCell(
+              Container(
+                constraints:
+                    BoxConstraints(minWidth: colwidth, maxWidth: colwidth),
+                alignment: columnSplit[0][1] == "L"
+                    ? Alignment.centerLeft
+                    : columnSplit[0][1] == "C"
+                        ? Alignment.center
+                        : Alignment.centerRight,
+                child: Padding(
+                  padding: EdgeInsets.all(0.0),
+                  child: Text(
+                    text.toString(),
+                    style: TextStyle(fontSize: 14, color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      });
+    }
+    print(datacell.length);
+    return datacell;
+  }
+
+  /////////////////////////////////////////////////////////////////////
+  calculateSum(List<dynamic> element, List tableColumn) {
+    Map map = {};
+    final oCcy = new NumberFormat("#,##0.00", "en_US");
+
+    List columnSplit = [];
+    print("dynamic elemnt------$tableColumn");
+    double sum = 0.0;
+    int intsum = 0;
+
+    for (int i = 0; i < element.length; i++) {
+      element[i].forEach((k, value) {
+        List key = k.split("_");
+        print("element[i]---${key[0][2]}");
+
+        if (key[0][2] == "Y") {
+          if (key[0][0] == "C") {
+            sum = sum + value;
+
+            map[k] = sum;
+          } else if (key[0][0] == "I") {
+            print("value runtyme-${value.runtimeType}");
+            int d = value;
+            intsum = intsum + d;
+            // String d2 = intsum.toStringAsFixed(2);
+            map[k] = intsum;
+          }
+        } else {
+          print("map-ggg----${key}");
+          map[k] = " ";
+        }
+      });
+    }
+
+    element.add(map);
+
+    print("final clculate map------$map");
+  }
+
+////////////////////////////////////////////////////////////////
+}
