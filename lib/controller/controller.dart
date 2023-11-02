@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sql_conn/sql_conn.dart';
 import 'package:trafiqpro/components/popups/level2_report_data.dart';
 import 'package:trafiqpro/components/popups/level3_report.dart';
@@ -9,20 +10,27 @@ import '../components/network_connectivity.dart';
 class Controller extends ChangeNotifier {
   String? fromDate;
   var jsonEncoded;
+  String? dashDate;
+  DateTime d = DateTime.now();
   String? todate;
   List<TextEditingController> listEditor = [];
   Map<String, dynamic> levelCriteria = {};
   bool isLoading = false;
   bool isReportLoading = false;
-
+  bool isSubReportLoading = false;
+  bool isl3SubReportLoading = false;
   List<Map<String, dynamic>> dashboard_report = [];
   var result1 = <String, List<Map<String, dynamic>>>{};
   List<Map<String, dynamic>> report_tile_val = [];
   List<Map<String, dynamic>> result = [];
   List<Map<String, dynamic>> sub_report = [];
   List<Map<String, dynamic>> report_data = [];
-  Map<String, dynamic> sub_report_data = {};
+  List<Map<String, dynamic>> sub_report_data = [];
+  List<Map<String, dynamic>> l3_sub_report_data = [];
+
   var sub_report_json;
+  var l3_sub_report_json;
+  String param = "";
   /////////////////////////////////////////////
   setDate(String date1, String date2) {
     fromDate = date1;
@@ -32,9 +40,7 @@ class Controller extends ChangeNotifier {
   }
 
 ////////////////////////////////////////////////////////
-  getHome(
-    BuildContext context,
-  ) {
+  getHome(BuildContext context, String date) {
     NetConnection.networkConnection(context).then((value) async {
       if (value == true) {
         try {
@@ -121,14 +127,19 @@ class Controller extends ChangeNotifier {
 
   ////////////////////////////////////////////////////////
   getReportTabledata(
-      BuildContext context, String sp, String date1, String date2, String key) {
+    BuildContext context,
+    String sp,
+    String date1,
+    String date2,
+  ) {
     NetConnection.networkConnection(context).then((value) async {
       if (value == true) {
         try {
           isReportLoading = true;
           notifyListeners();
+          param = "'$date1','$date2'";
           print("parameters--------------$sp-----$date1,$date2");
-          var res = await SqlConn.readData("$sp '0','1',$date1,$date2");
+          var res = await SqlConn.readData("$sp '0','1',$param");
           print("report table----$res");
           var valueMap = json.decode(res);
           print("value map----$valueMap");
@@ -173,10 +184,9 @@ class Controller extends ChangeNotifier {
 
   /////////////////////////////////////////////////////////////
   findLevelCriteria(
-    BuildContext context,
-    int level,
-    int index,
-  ) {
+      BuildContext context, int level, int index, String val) async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // pre
     print("level-----$level");
     levelCriteria = {};
     if (sub_report.isNotEmpty) {
@@ -187,14 +197,19 @@ class Controller extends ChangeNotifier {
       }
 
       // getReportTabledata(context, levelCriteria["Sub_Script"], "");
-      getSubreportData(context, levelCriteria["Sub_Script"],
-          fromDate.toString(), todate.toString(), levelCriteria["Sub_Key"]);
+
       if (level == 1) {
+        param = "$param,'$val'";
         Level2ReportDetails popup = Level2ReportDetails();
-        popup.viewData(context, levelCriteria, index);
+        popup.viewData(context, levelCriteria, index, val);
+        getL2SubreportData(context, levelCriteria["Sub_Script"],
+            fromDate.toString(), todate.toString(), param);
       } else if (level == 2) {
         Level3ReportDetails popup = Level3ReportDetails();
-        popup.viewData(context, levelCriteria, level, index);
+        popup.viewData(context, levelCriteria, index, val);
+        param = "$param,'$val'";
+        getL3SubreportData(context, levelCriteria["Sub_Script"],
+            fromDate.toString(), todate.toString(), param);
       }
     }
     print("levelcriteria--------$levelCriteria");
@@ -202,37 +217,27 @@ class Controller extends ChangeNotifier {
   }
 
   /////////////////////////////////////////////////////////////
-  getSubreportData(
-      BuildContext context, String sp, String date1, String date2, String key) {
+  getL2SubreportData(
+      BuildContext context, String sp, String date1, String date2, String val) {
     NetConnection.networkConnection(context).then((value) async {
-      print("parameters----------------$sp-----$date1----$date2----$key");
+      print(
+          "sub parameters----------------$sp,'0','1','$date1','$date2','$val'");
       if (value == true) {
         try {
-          sub_report_data = {
-            "id": "3",
-            "title": "SALES",
-            "graph": "0",
-            "sum": "NY",
-            "align": 'LR',
-            "width": "60,40",
-            "search": "0",
-            "data": [
-              {"name": "anusha", 'VALUE': "0"},
-              {"name": "anugraha", "VALUE": "0"},
-              {"name": "danush", "VALUE": "0"},
-              {"name": "shilpa", "VALUE": "0"},
-              {"name": "anil", 'VALUE': "0"},
-            ]
-          };
+          isSubReportLoading = true;
+          notifyListeners();
+          var res = await SqlConn.readData("$sp 0,1,$val");
+          print("sub report table----$res");
+          var valueMap = json.decode(res);
+          print("sub report value map----$valueMap");
+          sub_report_data.clear();
+          for (var item in valueMap) {
+            sub_report_data.add(item);
+          }
           sub_report_json = jsonEncode(sub_report_data);
-
-          // print("rprttt-Id----$sp");
-          // var res = await SqlConn.readData("$sp '0','1', $date1, $date2, $key");
-          // var map = jsonDecode(res);
-          // sub_report_data.clear();
-          // for (var item in map) {
-          //   sub_report_data.add(item);
-          // }
+          print("subreport json----$sub_report_json");
+          isSubReportLoading = false;
+          notifyListeners();
           print("sub_report_data---$sub_report_data");
           notifyListeners();
         } catch (e) {
@@ -242,5 +247,64 @@ class Controller extends ChangeNotifier {
         }
       }
     });
+  }
+
+  ///////////////////////////////////////////////////////////////////////////
+  getL3SubreportData(
+      BuildContext context, String sp, String date1, String date2, String val) {
+    NetConnection.networkConnection(context).then((value) async {
+      print("sub l3 parameters----------------$sp,'0','1',$val");
+      if (value == true) {
+        try {
+          isl3SubReportLoading = true;
+          notifyListeners();
+          print("param-------$val");
+          var res = await SqlConn.readData("$sp '0','1',$val");
+          print("sub l3 report table----$res");
+          var valueMap = json.decode(res);
+          sub_report_data.clear();
+          for (var item in valueMap) {
+            sub_report_data.add(item);
+          }
+          sub_report_json = jsonEncode(sub_report_data);
+          print("l3 subreport json----$sub_report_json");
+          isl3SubReportLoading = false;
+          notifyListeners();
+        } catch (e) {
+          print(e);
+          // return null;
+          return [];
+        }
+      }
+    });
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////
+  splitParametr(String level) {
+    List listParam = param.split(',');
+    if (level == "2") {
+      param = "${listParam[0]},${listParam[1]}";
+      print("listparam1--------$param");
+    } else if (level == "3") {
+      param = "${listParam[0]},${listParam[1]},${listParam[2]}";
+    }
+    notifyListeners();
+  }
+  //////////////////////////////////////////////////////////////////////////////////////////
+  findDate(DateTime date, String type, BuildContext context) {
+    if (type == "prev") {
+      // d = date.subtract(Duration(days: i));
+      d = DateTime(date.year, date.month, date.day - 1);
+      dashDate = DateFormat('dd-MMM-yyyy').format(d);
+      getHome(context, dashDate.toString());
+    } else {
+      if (DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day) !=
+          DateTime(date.year, date.month, date.day)) {
+        d = DateTime(date.year, date.month, date.day + 1);
+        dashDate = DateFormat('dd-MMM-yyyy').format(d);
+        getHome(context, dashDate.toString());
+      }
+    }
+    notifyListeners();
   }
 }

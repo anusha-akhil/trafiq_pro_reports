@@ -80,8 +80,10 @@ class _DashboardReportState extends State<DashboardReport> {
               Text(
                 map["Rpt_Name"].toString().toUpperCase(),
                 textAlign: TextAlign.center,
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 16),
               ),
               SizedBox(
                 height: size.height * 0.004,
@@ -119,7 +121,7 @@ class _DashboardReportState extends State<DashboardReport> {
                     color: Colors.white,
                     fontSize: 18),
               ),
-             Divider(),
+              Divider(),
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: valueMap
@@ -136,7 +138,8 @@ class _DashboardReportState extends State<DashboardReport> {
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           // fontWeight: FontWeight.bold,
-                                          color: Color.fromARGB(255, 250, 225, 3),
+                                          color:
+                                              Color.fromARGB(255, 250, 225, 3),
                                           fontSize: 14)),
                                   SizedBox(
                                     height: 10,

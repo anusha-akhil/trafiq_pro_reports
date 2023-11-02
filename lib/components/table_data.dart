@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../controller/controller.dart';
@@ -10,22 +11,25 @@ class TableData extends StatefulWidget {
   String keyVal;
   double popuWidth;
   int level;
+  String title;
   TableData(
       {required this.decodd,
       required this.index,
       required this.keyVal,
       required this.popuWidth,
-      required this.level});
+      required this.level,
+      required this.title});
 
   @override
   State<TableData> createState() => _TableDataState();
 }
 
 class _TableDataState extends State<TableData> {
+  TextEditingController seacrh = TextEditingController();
   String? key;
   int _currentSortColumn = 0;
   bool _isSortAsc = true;
-  // DetailedInfoSheet info = DetailedInfoSheet();
+  List li = [];
   List<dynamic> mapTabledata = [];
   List<String> tableColumn = [];
   Map<String, dynamic> valueMap = {};
@@ -58,12 +62,20 @@ class _TableDataState extends State<TableData> {
       newMp.add(element);
       filteredList.add(element);
     });
+    // filteredList = [
+    //   {"CRN40_BARCODE": 35, "CRY40_SALES": 813.56},
+    //   {"CRN40_BARCODE": "", "CRY40_SALES": 813.56}
+    // ];
+    // var element = newMp[0].keys.elementAt(0);
+    key = newMp[0].keys.toList().first;
+    li = key!.split('_');
+    print("filteredList---${filteredList}");
     print("newMp---${newMp}");
-    // key = newMp[0].keys.toList().first;
-    if (widget.keyVal != "0") {
-      int ele = int.parse(widget.keyVal) - 1;
-      key = newMp[0].keys.elementAt(ele);
-    }
+
+    // if (widget.keyVal != "0") {
+    //   int ele = int.parse(widget.keyVal) - 1;
+    //   key = newMp[0].keys.elementAt(ele);
+    // }
   }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -71,74 +83,160 @@ class _TableDataState extends State<TableData> {
     // FocusScope.of(context).requestFocus(FocusNode());
 
     Size size = MediaQuery.of(context).size;
-    datatbleWidth = widget.popuWidth - 30;
+    datatbleWidth = widget.popuWidth - 20;
     print(
         "screen width-----${size.width}------datatble width-----$datatbleWidth");
-    return Container(
-      // height: size.height*0.6,
-      width: datatbleWidth,
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: DataTable(
-          showCheckboxColumn: false,
-          columnSpacing: 7,
-          headingRowHeight: 45,
-          dataRowHeight: 38,
-          horizontalMargin: 5,
+        child: Container(
+          // height: size.height*0.6,
+          width: datatbleWidth,
+          child: Column(
+            children: [
+              widget.keyVal == "0"
+                  ? Container()
+                  : Container(
+                      height: size.height * 0.05,
+                      // width: 200,
+                      // margin: EdgeInsets.only(left: 3, right:3),
+                      child: TextFormField(
+                        controller: seacrh,
+                        //   decoration: const InputDecoration(,
+                        onChanged: (value) {
+                          setState(() {
+                            // String key = newMp[0].keys.toList().first;
+                            // print("msnmdli----${li[0]}");
+                            filteredList = value.isEmpty || value == " "
+                                ? newMp
+                                : newMp
+                                    .where(
+                                        (item) => item[key].startsWith(value))
+                                    .toList();
+                            print("after filter-------$newMp");
+                          });
+                        },
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: Colors.blue,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: new Icon(Icons.cancel),
+                              onPressed: () {
+                                setState(() {
+                                  filteredList = newMp;
+                                });
+                                seacrh.text = " ";
+                                seacrh.clear();
+                              },
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 0),
+                            border: OutlineInputBorder(
+                              // borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                  color: Color.fromARGB(255, 128, 125, 125),
+                                  width: 0.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              // borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                  color: Color.fromARGB(255, 128, 125, 125),
+                                  width: 0.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              // borderRadius: BorderRadius.circular(10.0),
+                              borderSide: BorderSide(
+                                  color: Color.fromARGB(255, 128, 125, 125),
+                                  width: 0.0),
+                            ),
+                            filled: true,
+                            hintStyle:
+                                TextStyle(color: Colors.blue, fontSize: 13),
+                            hintText: "Search ${li[1]} here.. ",
+                            fillColor: Colors.grey[100]),
+                      ),
+                    ),
+              SizedBox(
+                height: size.height * 0.001,
+              ),
+              // widget.title == null
+              //     ? Container()
+              //     : Padding(
+              //         padding: const EdgeInsets.only(bottom:8.0),
+              //         child: Row(
+              //           mainAxisAlignment: MainAxisAlignment.start,
+              //           children: [
+              //             Text(
+              //               widget.title.toString(),
+              //               style: TextStyle(
+              //                 fontWeight: FontWeight.bold,fontSize: 15
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
 
-          // sortColumnIndex: _currentSortColumn,
-          // sortAscending: _isSortAsc,
-          // decoration: BoxDecoration(color: P_Settings.bar1Color),
-          // border: TableBorder.all(
-          //   color: P_Settings.bar1Color,
-          // ),
-          headingRowColor: MaterialStateProperty.all(Colors.yellow),
-          columns: getColumns(
-            tableColumn,
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  showCheckboxColumn: false,
+                  columnSpacing: 0,
+                  headingRowHeight: 45,
+                  dataRowHeight: 38,
+                  horizontalMargin: 5,
+                  headingRowColor: MaterialStateProperty.all(Colors.yellow),
+                  columns: getColumns(tableColumn),
+                  rows: getRowss(filteredList, seacrh),
+                ),
+              ),
+            ],
           ),
-          rows: getRowss(
-            filteredList,
-          ),
-        ),
-      ),
-    );
+        ));
   }
 
   ///////////////////////////////////////////////////
   List<DataColumn> getColumns(
     List<String> columns,
   ) {
-    double colwidth = 0.0;
     List<String> columnSplit = [];
     List<DataColumn> datacolumnList = [];
     print("columns --------${columns}");
-
+    String wid = "";
     for (int i = 0; i < columns.length; i++) {
+      double colwidth = 0.0;
+
       columnSplit = columns[i].split('_');
-      String wid = columns[i].substring(3, 5);
+      wid = columns[i].substring(3, 5);
       print("columnsplit-------${wid}");
       if (columns.length == 0) {
         colwidth = (datatbleWidth! / columns.length);
       } else {
-        colwidth = (datatbleWidth! * double.parse(wid) / 100);
+        if (wid == '00') {
+          // print("hhhh");
+          colwidth = 0.0;
+          colwidth = colwidth * 0.94;
+        } else {
+          colwidth = (datatbleWidth! * double.parse(wid) / 100);
+          colwidth = colwidth * 0.94;
+        }
+        print("columnwdth-----$i--$datatbleWidth ----${double.parse(wid)}");
       }
-      colwidth = colwidth * 0.94;
       datacolumnList.add(DataColumn(
-        label: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: colwidth, maxWidth: colwidth),
-          child: Padding(
-            padding: EdgeInsets.all(0.0),
-            child: Text(columnSplit[1].toString(),
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
-                textAlign: columnSplit[0][1] == "L"
-                    ? TextAlign.left
-                    : columnSplit[0][1] == "C"
-                        ? TextAlign.center
-                        : TextAlign.right),
-          ),
+        label: SizedBox(
+          width: colwidth,
+          child: Text(columnSplit[1].toString(),
+              overflow: TextOverflow.ellipsis,
+              softWrap: true,
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
+              textAlign: columnSplit[0][1] == "L"
+                  ? TextAlign.left
+                  : columnSplit[0][1] == "C"
+                      ? TextAlign.center
+                      : TextAlign.right),
         ),
       ));
     }
@@ -159,25 +257,33 @@ class _TableDataState extends State<TableData> {
 
   ////////////////////////////////////////////////////////////////
   List<DataRow> getRowss(
-    List<Map<dynamic, dynamic>> row,
-  ) {
+      List<Map<dynamic, dynamic>> row, TextEditingController controller) {
     print("rowjsjfkd-----$row");
     List<DataRow> items = [];
 
     var itemList = filteredList;
+    print("nnsdnsd---------------$itemList");
     for (var r = 0; r < itemList.length; r++) {
       items.add(DataRow(
           onSelectChanged: (selected) {
-            print("selected------$selected");
+            // String val=
             if (selected!) {
-              Provider.of<Controller>(context, listen: false)
-                  .findLevelCriteria(context, widget.level, r);
+              if (widget.level != 3) {
+                print("selected------${itemList[r]}");
+                String val = itemList[r].values.toList().first.toString();
+                print("val----$val");
+                Provider.of<Controller>(context, listen: false)
+                    .findLevelCriteria(context, widget.level, r, val);
+              }
+
               // LevelReportDetails popup = LevelReportDetails();
               // popup.viewData(context, itemList[r], r);
             }
           },
           color: r == itemList.length - 1
-              ? MaterialStateProperty.all(Colors.pink)
+              ? controller.text == ""
+                  ? MaterialStateProperty.all(Colors.pink)
+                  : MaterialStateProperty.all(Colors.black)
               : MaterialStateProperty.all(Colors.black),
 
           //  r % 2 == 0
@@ -200,87 +306,69 @@ class _TableDataState extends State<TableData> {
   List<DataCell> getCelle(
     Map<dynamic, dynamic> data,
   ) {
-    String behv;
-    String colsName;
-
-    String? dval;
-    double colwidth = 0.0;
     print("data--$data");
     List<DataCell> datacell = [];
     List<String> columnSplit = [];
+    String wid = "";
 
     print("data-------$data");
-    String text = data.values.elementAt(0);
+    // String text = data.values.elementAt(0);
     for (var i = 0; i < tableColumn.length; i++) {
+      double colwidth = 0.0;
+
       data.forEach((key, value) {
         if (tableColumn[i] == key) {
           columnSplit = tableColumn[i].split('_');
-          String wid = tableColumn[i].substring(3, 5);
+          wid = tableColumn[i].substring(3, 5);
           if (tableColumn.length == 0) {
             colwidth = (datatbleWidth! / tableColumn.length);
           } else {
-            colwidth = (datatbleWidth! * double.parse(wid) / 100);
+            if (wid == '00') {
+              print("hhhh");
+              colwidth = 0.0;
+              colwidth = colwidth * 0.94;
+            } else {
+              colwidth = (datatbleWidth! * double.parse(wid) / 100);
+              colwidth = colwidth * 0.94;
+            }
           }
-          colwidth = colwidth * 0.94;
           print("key from datacell----$key");
           String text = "";
-
-          // if (columnSplit[0][2] == "Y") {
-          //   if (columnSplit[0][0] == "I") {
-
-          //     dval = value.toString();
-
-          //     print("sjkhfjdf------$dval");
-          //   } else if (columnSplit[0][0] == "C") {
-          //     double d = double.parse(value);
-          //     dval = d.toStringAsFixed(2);
-          //   }else{
-          //     dval=value.toString();
-          //   }
-
-          //   print("dunduu----$dval");
-          // }
-
-          //  else {
-          //   if (value == null || value.isEmpty || value == " ") {
-          //     dval = value;
-          //   } else {
-          //     RegExp _numeric = RegExp(r'^-?(([0-9]*)|(([0-9]*)\.([0-9]*)))$');
-          //     bool isnum = _numeric.hasMatch(value);
-          //     print("isnum ----$isnum-----$_numeric");
-          //     if (isnum) {
-          //       double d = double.parse(value);
-          //       dval = d.toStringAsFixed(2);
-          //     } else {
-          //       dval = value;
-          //     }
-          //   }
-          // }
-
           if (columnSplit[0][0] == "C") {
-            text = value.toStringAsFixed(2);
+            if (value != " ") {
+              text = value.toStringAsFixed(2);
+              print("frtyuui------$text");
+            }
           } else if (columnSplit[0][0] == "I") {
-            text = value.toString();
-          } else {
-            text = value.toString();
+            if (value != " ") {
+              text = value.toString();
+            }
+          } else if (columnSplit[0][0] == "T") {
+            if (value != " ") {
+              text = value.toString();
+            }
+            print("testtt----${text.runtimeType}");
+          } else if (columnSplit[0][0] == "D") {
+            if (value != " ") {
+              text = value.toString();
+            }
           }
           datacell.add(
             DataCell(
-              Container(
-                constraints:
-                    BoxConstraints(minWidth: colwidth, maxWidth: colwidth),
-                alignment: columnSplit[0][1] == "L"
-                    ? Alignment.centerLeft
-                    : columnSplit[0][1] == "C"
-                        ? Alignment.center
-                        : Alignment.centerRight,
-                child: Padding(
-                  padding: EdgeInsets.all(0.0),
-                  child: Text(
-                    text.toString(),
-                    style: TextStyle(fontSize: 14, color: Colors.white),
-                  ),
-                ),
+              SizedBox(
+                width: colwidth,
+                child: Text(text.toString(),
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                    textAlign: columnSplit[0][1] == "L"
+                        ? TextAlign.left
+                        : columnSplit[0][1] == "C"
+                            ? TextAlign.center
+                            : TextAlign.right),
               ),
             ),
           );
@@ -296,7 +384,6 @@ class _TableDataState extends State<TableData> {
     Map map = {};
     final oCcy = new NumberFormat("#,##0.00", "en_US");
 
-    List columnSplit = [];
     print("dynamic elemnt------$tableColumn");
     double sum = 0.0;
     int intsum = 0;
@@ -304,18 +391,15 @@ class _TableDataState extends State<TableData> {
     for (int i = 0; i < element.length; i++) {
       element[i].forEach((k, value) {
         List key = k.split("_");
-        print("element[i]---${key[0][2]}");
-
         if (key[0][2] == "Y") {
           if (key[0][0] == "C") {
             sum = sum + value;
-
+            print("sum-----$sum");
             map[k] = sum;
           } else if (key[0][0] == "I") {
             print("value runtyme-${value.runtimeType}");
             int d = value;
             intsum = intsum + d;
-            // String d2 = intsum.toStringAsFixed(2);
             map[k] = intsum;
           }
         } else {
@@ -324,9 +408,7 @@ class _TableDataState extends State<TableData> {
         }
       });
     }
-
     element.add(map);
-
     print("final clculate map------$map");
   }
 

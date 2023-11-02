@@ -12,7 +12,7 @@ import 'package:trafiqpro/components/table_data.dart';
 import '../../controller/controller.dart';
 
 class Level1ReportDetails {
-  Future viewData(BuildContext context, Map<String, dynamic> map, int index) {
+  Future viewData(BuildContext context, Map<String, dynamic> map, int index,) {
     // Map report_data = {
     //   "id": "3",
     //   "title": "SALES",
@@ -30,7 +30,7 @@ class Level1ReportDetails {
     // };
     // var jsonEncoded = jsonEncode(report_data);
 
-    print("map-----$map");
+    print("single map-----$map");
     // var jsonEncoded;
     DateFind dateFind = DateFind();
     String? todaydate;
@@ -176,13 +176,12 @@ class Level1ReportDetails {
                                               value.todate =
                                                   value.todate.toString();
                                             }
-
                                             value.getReportTabledata(
-                                                context,
-                                                map["Rpt_Script"],
-                                                value.fromDate.toString(),
-                                                value.todate.toString(),
-                                                map["Rpt_Key"]);
+                                              context,
+                                              map["Rpt_Script"],
+                                              value.fromDate.toString(),
+                                              value.todate.toString(),
+                                            );
                                           },
                                           child: Icon(
                                             Icons.done,
@@ -191,81 +190,12 @@ class Level1ReportDetails {
                                     ))
                                   ],
                                 ),
-                                // Padding(
-                                //   padding: const EdgeInsets.only(left: 13.0),
-                                //   child: Row(
-                                //     mainAxisAlignment:
-                                //         MainAxisAlignment.spaceBetween,
-                                //     children: [
-                                //       // Text("Filter : "),
-                                //       Container(
-                                //         margin: EdgeInsets.only(
-                                //             left: 2, right: 2, top: 12),
-                                //         decoration: BoxDecoration(
-                                //           border: Border.all(
-                                //               color: Color.fromARGB(
-                                //                   255, 163, 163, 163)),
-                                //           borderRadius: BorderRadius.circular(3),
-                                //         ),
-                                //         width: size.width * 0.68,
-                                //         height: size.height * 0.05,
-                                //         child: ButtonTheme(
-                                //           alignedDropdown: true,
-                                //           child: DropdownButton<String>(
-                                //             // value: selected,
-                                //             // isDense: true,
-                                //             hint: Text(
-                                //               "Apply Filter",
-                                //               style: TextStyle(fontSize: 14),
-                                //             ),
-                                //             isExpanded: true,
-                                //             autofocus: false,
-                                //             underline: SizedBox(),
-                                //             elevation: 0,
-                                //             items: [
-                                //               "Anus",
-                                //               "dansh",
-                                //               "sippa",
-                                //               "anil"
-                                //             ]
-                                //                 .map((item) =>
-                                //                     DropdownMenuItem<String>(
-                                //                         value: item.toString(),
-                                //                         child: Container(
-                                //                           width: size.width * 0.4,
-                                //                           child: Text(
-                                //                             item.toString(),
-                                //                             style: TextStyle(
-                                //                                 fontSize: 14),
-                                //                           ),
-                                //                         )))
-                                //                 .toList(),
-                                //             onChanged: (item) {
-                                //               print("clicked");
-                                //               if (item != null) {
-                                //                 print("clicked------$item");
-                                //                 // // value.areaId = item;
-                                //                 // Provider.of<Controller>(context, listen: false)
-                                //                 //     .setDropdowndata(item);
-                                //                 // Provider.of<Controller>(context, listen: false)
-                                //                 //     .getItemwisereport(
-                                //                 //   context,
-                                //                 // );
-                                //               }
-                                //             },
-                                //           ),
-                                //         ),
-                                //       ),
-
-                                //     ],
-                                //   ),
-                                // ),
                               ],
                             ),
                           ),
                         ),
                         SizedBox(
-                          height: size.height * 0.02,
+                          height: size.height * 0.01,
                         ),
                         value.isReportLoading
                             ? SpinKitCircle(
@@ -281,17 +211,13 @@ class Level1ReportDetails {
                                     ),
                                   )
                                 : Expanded(
-                                    child: Container(
-                                      // height: size.height * 0.5,
-                                      // color: Colors.white,
-                                      child: TableData(
-                                          decodd: value.jsonEncoded,
-                                          index: index,
-                                          keyVal: "0",
-                                          popuWidth: width,
-                                          level: 1),
-                                    ),
-                                  )
+                                  child: TableData(
+                                      decodd: value.jsonEncoded,
+                                      index: index,
+                                      keyVal: "1",
+                                      popuWidth: width,
+                                      level: 1,title: ""),
+                                )
                       ],
                     ),
                   ),

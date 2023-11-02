@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:trafiqpro/components/date_find.dart';
@@ -9,8 +10,7 @@ import 'package:trafiqpro/components/table_data.dart';
 import '../../controller/controller.dart';
 
 class Level3ReportDetails {
-  Future viewData(BuildContext context, Map map, int level, int index) {
-    print("map-----$map");
+  Future viewData(BuildContext context, Map map, int index, String val) {
     // var jsonEncoded;
     DateFind dateFind = DateFind();
     String? todaydate;
@@ -24,7 +24,7 @@ class Level3ReportDetails {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            backgroundColor: Color.fromARGB(255, 122, 245, 245),
+            backgroundColor: const Color.fromARGB(255, 255, 255, 255),
             contentPadding: EdgeInsets.all(8),
             insetPadding: EdgeInsets.all(8),
             //  backgroundColor: Colors.grey[200],
@@ -37,6 +37,9 @@ class Level3ReportDetails {
                 ),
                 InkWell(
                     onTap: () {
+                      Provider.of<Controller>(context, listen: false)
+                          .splitParametr("3");
+
                       Navigator.pop(context);
                     },
                     child: Icon(
@@ -59,28 +62,33 @@ class Level3ReportDetails {
                         SizedBox(
                           height: size.height * 0.02,
                         ),
-                        value.report_data.length == 0
-                            ? Center(
-                                child: Text(
-                                  "No Data",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                ),
+                        value.isl3SubReportLoading
+                            ? SpinKitCircle(
+                                color: Colors.black,
                               )
-                            : Expanded(
-                                child: Container(
-                                  // height: size.height * 0.5,
-                                  // color: Colors.white,
-                                  child: TableData(
-                                    decodd: value.sub_report_json,
-                                    index: index,
-                                    keyVal: "0",
-                                    popuWidth: width,
-                                    level: level,
-                                  ),
-                                ),
-                              )
+                            : value.sub_report_data.length == 0
+                                ? Center(
+                                    child: Text(
+                                      "No Data",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black),
+                                    ),
+                                  )
+                                : Expanded(
+                                    child: Container(
+                                      // height: size.height * 0.5,
+                                      // color: Colors.white,
+                                      child: TableData(
+                                        decodd: value.sub_report_json,
+                                        index: index,
+                                        keyVal: "0",
+                                        popuWidth: width,
+                                        level: 3,
+                                        title: val,
+                                      ),
+                                    ),
+                                  )
                       ],
                     ),
                   ),

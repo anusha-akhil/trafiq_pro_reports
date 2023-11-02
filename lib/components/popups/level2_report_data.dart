@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:trafiqpro/components/date_find.dart';
@@ -9,7 +10,7 @@ import 'package:trafiqpro/components/table_data.dart';
 import '../../controller/controller.dart';
 
 class Level2ReportDetails {
-  Future viewData(BuildContext context, Map map, int index) {
+  Future viewData(BuildContext context, Map map, int index, String val) {
     print("map-----$map");
     // var jsonEncoded;
     DateFind dateFind = DateFind();
@@ -24,7 +25,7 @@ class Level2ReportDetails {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            backgroundColor: Color.fromARGB(255, 247, 170, 221),
+            backgroundColor: Colors.grey[400],
             contentPadding: EdgeInsets.all(8),
             insetPadding: EdgeInsets.all(8),
             //  backgroundColor: Colors.grey[200],
@@ -37,6 +38,8 @@ class Level2ReportDetails {
                 ),
                 InkWell(
                     onTap: () {
+                      Provider.of<Controller>(context, listen: false)
+                          .splitParametr("2");
                       Navigator.pop(context);
                     },
                     child: Icon(
@@ -59,28 +62,33 @@ class Level2ReportDetails {
                         SizedBox(
                           height: size.height * 0.02,
                         ),
-                        value.report_data.length == 0
-                            ? Center(
-                                child: Text(
-                                  "No Data",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                ),
+                        value.isSubReportLoading
+                            ? SpinKitCircle(
+                                color: Colors.black,
                               )
-                            : Expanded(
-                                child: Container(
-                                  // height: size.height * 0.5,
-                                  // color: Colors.white,
-                                  child: TableData(
-                                    decodd: value.sub_report_json,
-                                    index: index,
-                                    keyVal: "0",
-                                    popuWidth: width,
-                                    level: 2,
-                                  ),
-                                ),
-                              )
+                            : value.sub_report_data.length == 0
+                                ? Center(
+                                    child: Text(
+                                      "No Data Found!!!",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 19),
+                                    ),
+                                  )
+                                : Expanded(
+                                    child: Container(
+                                      // height: size.height * 0.5,
+                                      // color: Colors.white,
+                                      child: TableData(
+                                        decodd: value.sub_report_json,
+                                        index: index,
+                                        keyVal: "1",
+                                        popuWidth: width,
+                                        level: 2,
+                                        title: val,
+                                      ),
+                                    ),
+                                  )
                       ],
                     ),
                   ),
