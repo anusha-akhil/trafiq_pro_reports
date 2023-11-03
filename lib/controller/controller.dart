@@ -216,7 +216,7 @@ class Controller extends ChangeNotifier {
     notifyListeners();
   }
 
-  /////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
   getL2SubreportData(
       BuildContext context, String sp, String date1, String date2, String val) {
     NetConnection.networkConnection(context).then((value) async {
@@ -248,8 +248,8 @@ class Controller extends ChangeNotifier {
       }
     });
   }
-
-  ///////////////////////////////////////////////////////////////////////////
+  
+  /////////////////////////////////////////////////////////////////////
   getL3SubreportData(
       BuildContext context, String sp, String date1, String date2, String val) {
     NetConnection.networkConnection(context).then((value) async {
@@ -278,7 +278,7 @@ class Controller extends ChangeNotifier {
       }
     });
   }
-  //////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////
   splitParametr(String level) {
     List listParam = param.split(',');
     if (level == "2") {
@@ -289,7 +289,7 @@ class Controller extends ChangeNotifier {
     }
     notifyListeners();
   }
-  //////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////
   findDate(DateTime date, String type, BuildContext context) {
     if (type == "prev") {
       // d = date.subtract(Duration(days: i));
@@ -307,4 +307,5 @@ class Controller extends ChangeNotifier {
     }
     notifyListeners();
   }
+  /////////////////////////////////////////////////////////////////
 }

@@ -12,7 +12,11 @@ import 'package:trafiqpro/components/table_data.dart';
 import '../../controller/controller.dart';
 
 class Level1ReportDetails {
-  Future viewData(BuildContext context, Map<String, dynamic> map, int index,) {
+  Future viewData(
+    BuildContext context,
+    Map<String, dynamic> map,
+    int index,
+  ) {
     // Map report_data = {
     //   "id": "3",
     //   "title": "SALES",
@@ -58,13 +62,14 @@ class Level1ReportDetails {
                   ),
                 ),
                 InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Icon(
-                      Icons.close,
-                      color: Colors.red,
-                    ))
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.red,
+                  ),
+                ),
               ],
             ),
             content: Builder(
@@ -150,43 +155,42 @@ class Level1ReportDetails {
                                       margin: EdgeInsets.only(top: 10),
                                       height: size.height * 0.05,
                                       child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            primary: Colors.yellow,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      2), // <-- Radius
-                                            ),
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Colors.yellow,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                2), // <-- Radius
                                           ),
-                                          onPressed: () {
-                                            String df;
-                                            String tf;
+                                        ),
+                                        onPressed: () {
+                                          String df;
+                                          String tf;
 
-                                            if (value.fromDate == null) {
-                                              value.fromDate =
-                                                  todaydate.toString();
-                                            } else {
-                                              value.fromDate =
-                                                  value.fromDate.toString();
-                                            }
-                                            if (value.todate == null) {
-                                              value.todate =
-                                                  todaydate.toString();
-                                            } else {
-                                              value.todate =
-                                                  value.todate.toString();
-                                            }
-                                            value.getReportTabledata(
-                                              context,
-                                              map["Rpt_Script"],
-                                              value.fromDate.toString(),
-                                              value.todate.toString(),
-                                            );
-                                          },
-                                          child: Icon(
-                                            Icons.done,
-                                            color: Colors.black,
-                                          )),
+                                          if (value.fromDate == null) {
+                                            value.fromDate =
+                                                todaydate.toString();
+                                          } else {
+                                            value.fromDate =
+                                                value.fromDate.toString();
+                                          }
+                                          if (value.todate == null) {
+                                            value.todate = todaydate.toString();
+                                          } else {
+                                            value.todate =
+                                                value.todate.toString();
+                                          }
+                                          value.getReportTabledata(
+                                            context,
+                                            map["Rpt_Script"],
+                                            value.fromDate.toString(),
+                                            value.todate.toString(),
+                                          );
+                                        },
+                                        child: const Icon(
+                                          Icons.done,
+                                          color: Colors.black,
+                                        ),
+                                      ),
                                     ))
                                   ],
                                 ),
@@ -211,13 +215,14 @@ class Level1ReportDetails {
                                     ),
                                   )
                                 : Expanded(
-                                  child: TableData(
-                                      decodd: value.jsonEncoded,
-                                      index: index,
-                                      keyVal: "1",
-                                      popuWidth: width,
-                                      level: 1,title: ""),
-                                )
+                                    child: TableData(
+                                        decodd: value.jsonEncoded,
+                                        index: index,
+                                        keyVal: "1",
+                                        popuWidth: width,
+                                        level: 1,
+                                        title: ""),
+                                  )
                       ],
                     ),
                   ),
