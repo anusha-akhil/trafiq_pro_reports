@@ -3,8 +3,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sql_conn/sql_conn.dart';
+import 'package:trafiqpro/controller/registration_controller.dart';
 import 'package:trafiqpro/screen/report_tabs.dart';
-
+import 'package:carousel_slider/carousel_slider.dart';
 import '../controller/controller.dart';
 import 'dahsboard_report_tile.dart';
 
@@ -16,49 +17,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Map<String, dynamic>> staffData = [
-    {"staff_id": "1", "name": "anusha"},
-    {"staff_id": "2", "name": "shilpa"},
-    {"staff_id": "3", "name": "danush"}
-  ];
+  // List<Map<String, dynamic>> staffData = [
+  //   {"staff_id": "1", "name": "anusha"},
+  //   {"staff_id": "2", "name": "shilpa"},
+  //   {"staff_id": "3", "name": "danush"}
+  // ];
   String? selected;
-  Future<void> connect(BuildContext ctx) async {
-    debugPrint("Connecting...");
-    try {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Please wait",
-                  style: TextStyle(fontSize: 13),
-                ),
-                SpinKitCircle(
-                  color: Colors.green,
-                )
-              ],
-            ),
-          );
-        },
-      );
-      await SqlConn.connect(
-          ip: "103.177.225.245",
-          port: "54321",
-          databaseName: "ReportServer\$S2016",
-          username: "sa",
-          password: "##v0e3g9a#");
-      debugPrint("Connected!");
-      Provider.of<Controller>(context, listen: false)
-          .getHome(context, todaydate.toString());
-    } catch (e) {
-      debugPrint(e.toString());
-    } finally {
-      Navigator.pop(context);
-    }
-  }
 
   String? todaydate;
 
@@ -68,11 +32,10 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement initState
     super.initState();
     todaydate = DateFormat('dd-MMM-yyyy').format(now);
-    // Provider.of<Controller>(context, listen: false).findPreviuosdate(now);
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      connect(context);
-      // Provider.of<Controller>(context, listen: false).getjsonDash(context);
+      Provider.of<Controller>(context, listen: false)
+          .getBranches(context, todaydate.toString());
+      Provider.of<Controller>(context, listen: false).getDbName();
     });
   }
 
@@ -81,81 +44,114 @@ class _HomePageState extends State<HomePage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
+      // backgroundColor: Colors.white70,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          "Company Name",
-          style: TextStyle(color: Colors.white),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.blue[600],
+        elevation: 10,
+        centerTitle: false,
+        title: Consumer<Controller>(
+          builder: (context, value, child) => Text(
+            value.cName.toString(),
+            style: TextStyle(color: Colors.white, fontSize: 15),
+          ),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Consumer<Controller>(
+                builder: (context, value, child) => InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: value.yr == null
+                          ? Container()
+                          : Text(
+                              value.yr.toString(),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                    )),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Consumer<Controller>(
           builder: (context, value, child) => Column(
             children: [
               Container(
-                height: size.height * 0.07,
+                height: size.height * 0.05,
                 // color: Colors.grey[200],
                 color: Theme.of(context).primaryColor,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      width: size.width * 0.34,
-                      // decoration: BoxDecoration(
-                      //   border: Border.all(
-                      //       color: Colors.white),
-                      //   borderRadius: BorderRadius.circular(28),
-                      // ),
-                      // width: size.width * 0.4,
-                      height: size.height * 0.04,
+                    value.branch_list.length == 0
+                        ? Container()
+                        : Container(
+                            width: size.width * 0.45,
+                            // decoration: BoxDecoration(
+                            //   border: Border.all(
+                            //       color: Colors.white),
+                            //   borderRadius: BorderRadius.circular(28),
+                            // ),
+                            // width: size.width * 0.4,
+                            height: size.height * 0.04,
 
-                      child: ButtonTheme(
-                        // alignedDropdown: true,
-                        child: DropdownButton<String>(
-                          value: selected,
-                          // isDense: true,
-                          hint: Padding(
-                            padding: const EdgeInsets.only(left: 9.0),
-                            child: Text(
-                              "Select Branch",
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.blue),
+                            child: ButtonTheme(
+                              // alignedDropdown: true,
+                              child: DropdownButton<String>(
+                                value: selected,
+                                // isDense: true,
+                                hint: Padding(
+                                  padding: const EdgeInsets.only(left: 9.0),
+                                  child: Text(
+                                    value.selected.toString(),
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.blue),
+                                  ),
+                                ),
+                                isExpanded: false,
+                                autofocus: false,
+                                underline: SizedBox(),
+                                elevation: 0,
+                                items: value.branch_list
+                                    .map((item) => DropdownMenuItem<String>(
+                                        value: item["Br_ID"].toString(),
+                                        child: Container(
+                                          // width: size.width * 0.4,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 9.0),
+                                            child: Text(
+                                              item["Br_Name"].toString(),
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.blue),
+                                            ),
+                                          ),
+                                        )))
+                                    .toList(),
+                                onChanged: (item) {
+                                  print("clicked");
+                                  String? date;
+                                  if (item != null) {
+                                    if (value.dashDate == null) {
+                                      date = todaydate.toString();
+                                    } else {
+                                      date = value.dashDate.toString();
+                                    }
+                                    Provider.of<Controller>(context,
+                                            listen: false)
+                                        .setDropdowndata(item.toString(),
+                                            date.toString(), context);
+                                    print("clicked------$item");
+                                  }
+                                },
+                              ),
                             ),
                           ),
-                          isExpanded: false,
-                          autofocus: false,
-                          underline: SizedBox(),
-                          elevation: 0,
-                          items: staffData
-                              .map((item) => DropdownMenuItem<String>(
-                                  value: item["staff_id"].toString(),
-                                  child: Container(
-                                    // width: size.width * 0.4,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 9.0),
-                                      child: Text(
-                                        item["name"].toString(),
-                                        style: TextStyle(
-                                            fontSize: 14, color: Colors.blue),
-                                      ),
-                                    ),
-                                  )))
-                              .toList(),
-                          onChanged: (item) {
-                            print("clicked");
-
-                            if (item != null) {
-                              setState(() {
-                                selected = item;
-                              });
-                              print("clicked------$item");
-                            }
-                          },
-                        ),
-                      ),
-                    ),
                     // Padding(
                     //   padding: const EdgeInsets.only(left: 8.0),
                     //   child: Text(
@@ -202,11 +198,12 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Divider(
-                thickness: 1,
-                color: Colors.white,
-                // height: 25,
-              ),
+              // Divider(
+              //   thickness: 1,
+              //   color: Colors.white,
+              //   // height: 25,
+              // ),
+              imageContainer(size),
               value.isLoading
                   ? Center(
                       child: SpinKitCircle(
@@ -218,6 +215,38 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget imageContainer(Size size) {
+    return CarouselSlider(
+      options: CarouselOptions(
+          viewportFraction: 1,
+          height: size.height * 0.25,
+          autoPlayInterval: Duration(seconds: 2),
+          autoPlay: true),
+      items: ["001.png", "002.png", "005.png"].map((i) {
+        return Builder(
+          builder: (BuildContext context) {
+            return Container(
+                margin: EdgeInsets.symmetric(horizontal: 4.0),
+                child: Image.asset(
+                  "assets/$i",
+                  fit: BoxFit.fill,
+                  width: size.width * 0.95,
+                ));
+          },
+        );
+      }).toList(),
+
+      // child: Container(
+      //   width: size.width * 0.95,
+      //   height: size.height * 0.25,
+      //   child: Image.asset(
+      //     "assets/graph.jpeg",
+      //     fit: BoxFit.cover,
+      //   ),
+      // ),
     );
   }
 }

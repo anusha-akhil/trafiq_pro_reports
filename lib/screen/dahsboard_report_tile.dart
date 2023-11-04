@@ -38,15 +38,79 @@ class _DashboardReportState extends State<DashboardReport> {
               shrinkWrap: true,
               itemCount: value.dashboard_report.length,
               itemBuilder: (context, index) {
-                if (value.dashboard_report[index]["values"][0].length == 1) {
-                  print("1---sfjknkjdfnd");
-                  return singlevalContainer(
-                      size, value.dashboard_report[index]);
+                print("sfjknkjdfnd-${value.dashboard_report[index]}");
+                if (value.dashboard_report[index]["values"].length > 0) {
+                  if (value.dashboard_report[index]["values"][0].length == 1) {
+                    return singlevalContainer(
+                        size, value.dashboard_report[index]);
+                  } else {
+                    print(
+                        "cbjhzdbhzcb----${value.dashboard_report[index]["values"]}");
+                    return multipleValueContainer(
+                        size, value.dashboard_report[index]);
+                  }
                 } else {
-                  print(
-                      "cbjhzdbhzcb----${value.dashboard_report[index]["values"]}");
-                  return multipleValueContainer(
-                      size, value.dashboard_report[index]);
+                  return Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          gradient: LinearGradient(
+                            begin: Alignment.topRight,
+                            end: Alignment.bottomLeft,
+                            colors: [
+                              Color.fromARGB(124, 250, 59, 225),
+                              Color.fromARGB(255, 12, 155, 250),
+                            ],
+                          )),
+                      child: Padding(
+                        padding: const EdgeInsets.all(28.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              value.dashboard_report[index]["Rpt_Name"]
+                                  .toString()
+                                  .toUpperCase(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                  // return Padding(
+                  //   padding: const EdgeInsets.all(4.0),
+                  //   child: Stack(
+                  //     alignment: Alignment.center,
+                  //     children: [
+                  //       // Image.asset("assets/graph.jpeg"),
+                  //       // new Container(
+                  //       //   decoration: new BoxDecoration(
+                  //       //     image: new DecorationImage(
+                  //       //       image: new AssetImage("assets/graph.jpeg"),
+                  //       //       fit: BoxFit.cover,
+                  //       //     ),
+                  //       //   ),
+                  //       // ),
+                  //       Text(
+                  //         value.dashboard_report[index]["Rpt_Name"]
+                  //             .toString()
+                  //             .toUpperCase(),
+                  //         textAlign: TextAlign.center,
+                  //         style: TextStyle(
+                  //             fontWeight: FontWeight.bold,
+                  //             color: Colors.white,
+                  //             fontSize: 16),
+                  //       ),
+                  //     ],
+
+                  //   ),
+                  // );
                 }
               },
             ),
@@ -68,8 +132,8 @@ class _DashboardReportState extends State<DashboardReport> {
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
               colors: [
-                Color.fromARGB(255, 4, 136, 243),
-                Color.fromARGB(255, 160, 198, 229),
+                Color.fromARGB(124, 250, 59, 225),
+                Color.fromARGB(255, 12, 155, 250),
               ],
             )),
         child: Padding(
@@ -164,12 +228,16 @@ class _DashboardReportState extends State<DashboardReport> {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomRight,
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
               colors: [
-                Color.fromARGB(255, 224, 108, 245),
-                Colors.blue,
+                Color.fromARGB(255, 233, 62, 167),
+                const Color.fromARGB(255, 1, 138, 250),
               ],
+              // colors: [
+              //   Color.fromARGB(255, 224, 124, 56),
+              //   Color.fromARGB(255, 2, 52, 92),
+              // ],
             )),
       ),
     );

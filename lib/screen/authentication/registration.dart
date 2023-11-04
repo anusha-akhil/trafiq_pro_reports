@@ -258,7 +258,8 @@ class _RegistrationState extends State<Registration> {
                                           "REGISTER",
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 17,color: Colors.white),
+                                              fontSize: 17,
+                                              color: Colors.white),
                                         ),
                                 )),
                           ),

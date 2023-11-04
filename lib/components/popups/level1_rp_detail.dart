@@ -13,10 +13,7 @@ import '../../controller/controller.dart';
 
 class Level1ReportDetails {
   Future viewData(
-    BuildContext context,
-    Map<String, dynamic> map,
-    int index,
-  ) {
+      BuildContext context, Map<String, dynamic> map, int index, int rpt_key) {
     // Map report_data = {
     //   "id": "3",
     //   "title": "SALES",
@@ -180,11 +177,11 @@ class Level1ReportDetails {
                                                 value.todate.toString();
                                           }
                                           value.getReportTabledata(
-                                            context,
-                                            map["Rpt_Script"],
-                                            value.fromDate.toString(),
-                                            value.todate.toString(),
-                                          );
+                                              context,
+                                              map["Rpt_Script"],
+                                              value.fromDate.toString(),
+                                              value.todate.toString(),
+                                              map["Rpt_MultiDt"]);
                                         },
                                         child: const Icon(
                                           Icons.done,
@@ -221,7 +218,8 @@ class Level1ReportDetails {
                                         keyVal: "1",
                                         popuWidth: width,
                                         level: 1,
-                                        title: ""),
+                                        title: "",
+                                        rpt_key: rpt_key.toString()),
                                   )
                       ],
                     ),

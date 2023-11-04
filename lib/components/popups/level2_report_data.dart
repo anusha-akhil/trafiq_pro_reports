@@ -10,7 +10,8 @@ import 'package:trafiqpro/components/table_data.dart';
 import '../../controller/controller.dart';
 
 class Level2ReportDetails {
-  Future viewData(BuildContext context, Map map, int index, String val) {
+  Future viewData(
+      BuildContext context, Map map, int index, String val, String rpt_key) {
     print("map-----$map");
     // var jsonEncoded;
     DateFind dateFind = DateFind();
@@ -59,6 +60,23 @@ class Level2ReportDetails {
                         SizedBox(
                           height: size.height * 0.01,
                         ),
+                        Padding(
+                          padding: const EdgeInsets.only(left:8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  val.toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: 15),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: size.height * 0.02,
                         ),
@@ -86,6 +104,7 @@ class Level2ReportDetails {
                                         popuWidth: width,
                                         level: 2,
                                         title: val,
+                                        rpt_key: rpt_key.toString(),
                                       ),
                                     ),
                                   )

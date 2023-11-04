@@ -49,6 +49,7 @@ dependencies:
   sql_conn: ^0.0.3
   device_info_plus: ^4.1.2
   sqflite: ^2.0.3+1
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:

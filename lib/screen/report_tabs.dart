@@ -58,7 +58,7 @@ class _ReportTabsState extends State<ReportTabs> {
                       value.todate = null;
                       value.fromDate = null;
                       Level1ReportDetails popup = Level1ReportDetails();
-                      popup.viewData(context, list[ind], ind);
+                      popup.viewData(context, list[ind], ind,list[ind]["Rpt_Key"]);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

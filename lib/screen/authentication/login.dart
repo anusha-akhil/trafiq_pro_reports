@@ -49,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
                     "assets/lo1.png",
                     fit: BoxFit.contain,
                   )),
-                  // Container(height: size.height*0.16,),
                   SizedBox(
                     height: size.height * 0.054,
                   ),
@@ -216,7 +215,8 @@ class _LoginPageState extends State<LoginPage> {
                                             "LOGIN",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 17,color: Colors.white),
+                                                fontSize: 17,
+                                                color: Colors.white),
                                           ),
                                   )),
                             ),

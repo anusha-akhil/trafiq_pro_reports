@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:sql_conn/sql_conn.dart';
 import 'package:trafiqpro/db_helper.dart';
+import 'package:trafiqpro/screen/db_selection_page.dart';
 import 'package:trafiqpro/screen/home_page.dart';
 import '../components/common_data.dart';
 import '../components/custom_snackbar.dart';
@@ -22,6 +25,8 @@ class RegistrationController extends ChangeNotifier {
   int scheduleListCount = 0;
   String? pendingEnq;
   String? pendingQtn;
+  bool isdbLoading = false;
+  List<Map<String, dynamic>> db_list = [];
   String? cnfQut;
   String? pendingSer;
   String? cust_id;
@@ -102,7 +107,7 @@ class RegistrationController extends ChangeNotifier {
           String? msg = regModel.msg;
 
           if (sof == "1") {
-            if (appType == 'RX') {
+            if (appType == 'TQ') {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               /////////////// insert into local db /////////////////////
               String? fp1 = regModel.fp;
@@ -132,8 +137,14 @@ class RegistrationController extends ChangeNotifier {
 
               isLoading = false;
               notifyListeners();
-
               prefs.setString("user_type", appType!);
+              prefs.setString("db_name", map["mssql_arr"][0]["db_name"]);
+              prefs.setString("old_db_name", map["mssql_arr"][0]["db_name"]);
+
+              prefs.setString("ip", map["mssql_arr"][0]["ip"]);
+              prefs.setString("port", map["mssql_arr"][0]["port"]);
+              prefs.setString("usern", map["mssql_arr"][0]["username"]);
+              prefs.setString("pass_w", map["mssql_arr"][0]["password"]);
               String? user = prefs.getString("userType");
               await TrafiqProDB.instance
                   .deleteFromTableCommonQuery("companyRegistrationTable", "");
@@ -169,45 +180,23 @@ class RegistrationController extends ChangeNotifier {
   //////////////////////////////////////////////////////////
   getLogin(String user_name, String password, BuildContext context) async {
     try {
-      Uri url = Uri.parse("$apiurl/login.php");
-      Map body = {
-        'uname': user_name,
-        'pass': password,
-      };
-      print("body------$body");
       isLoginLoading = true;
       notifyListeners();
-      http.Response response = await http.post(
-        url,
-        body: body,
-      );
-      // print("login body ${body}");
-
-      var map = jsonDecode(response.body);
-      print("login map ${map}");
-      isLoginLoading = false;
-      notifyListeners();
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      if (map == null || map.length == 0) {
+
+      if (user_name.toLowerCase() != "vega" ||
+          password.toLowerCase() != "vega") {
         CustomSnackbar snackbar = CustomSnackbar();
-        // ignore: use_build_context_synchronously
         snackbar.showSnackbar(context, "Incorrect Username or Password", "");
         isLoginLoading = false;
         notifyListeners();
       } else {
         prefs.setString("st_uname", user_name);
-        prefs.setString("name", map[0]["name"]);
         prefs.setString("st_pwd", password);
-        prefs.setString("user_id", map[0]["user_id"]);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+        initDb(context, "from login");
       }
-      // print("stafff-------${loginModel.staffName}");
+      isLoginLoading = false;
       notifyListeners();
-      // return staffModel;
     } catch (e) {
       // ignore: avoid_print
       print(e);
@@ -215,6 +204,7 @@ class RegistrationController extends ChangeNotifier {
     }
   }
 
+//////////////////////////////////////////////////////////
   getUserData() async {
     isLoading = true;
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -223,5 +213,87 @@ class RegistrationController extends ChangeNotifier {
     print("haiii ----$cname");
     isLoading = false;
     notifyListeners();
+  }
+
+////////////////////////////////////////////////////////
+  initDb(BuildContext context, String type) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? db = prefs.getString("old_db_name");
+    String? ip = prefs.getString("ip");
+    String? port = prefs.getString("port");
+    String? un = prefs.getString("usern");
+    String? pw = prefs.getString("pass_w");
+    debugPrint("Connecting...");
+    try {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Please wait",
+                  style: TextStyle(fontSize: 13),
+                ),
+                SpinKitCircle(
+                  color: Colors.green,
+                )
+              ],
+            ),
+          );
+        },
+      );
+      await SqlConn.connect(
+          ip: ip!,
+          port: port!,
+          databaseName: db!,
+          username: un!,
+          password: pw!);
+      debugPrint("Connected!");
+      getDatabasename(context, type);
+
+      // getDatabasename(context);
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      Navigator.pop(context);
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////
+  getDatabasename(BuildContext context, String type) async {
+    isdbLoading = true;
+    notifyListeners();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? db = prefs.getString("db_name");
+    String? cid = await prefs.getString("cid");
+    print("cid dbname---------$cid---$db");
+    var res = await SqlConn.readData("Flt_LoadYears '$db','$cid'");
+    var map = jsonDecode(res);
+    db_list.clear();
+    if (map != null) {
+      for (var item in map) {
+        db_list.add(item);
+      }
+    }
+    print("years res-$res");
+    isdbLoading = false;
+    notifyListeners();
+    if (db_list.length > 0) {
+      if (type == "from login") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DbSelection()),
+        );
+      }
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    }
+
+    // notifyListeners();
   }
 }

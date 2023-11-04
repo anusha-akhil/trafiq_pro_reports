@@ -10,7 +10,8 @@ import 'package:trafiqpro/components/table_data.dart';
 import '../../controller/controller.dart';
 
 class Level3ReportDetails {
-  Future viewData(BuildContext context, Map map, int index, String val) {
+  Future viewData(
+      BuildContext context, Map map, int index, String val, String rpt_key) {
     // var jsonEncoded;
     DateFind dateFind = DateFind();
     String? todaydate;
@@ -59,6 +60,21 @@ class Level3ReportDetails {
                         SizedBox(
                           height: size.height * 0.01,
                         ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                val.toString(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                    fontSize: 15),
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(
                           height: size.height * 0.02,
                         ),
@@ -80,12 +96,13 @@ class Level3ReportDetails {
                                       // height: size.height * 0.5,
                                       // color: Colors.white,
                                       child: TableData(
-                                        decodd: value.sub_report_json,
+                                        decodd: value.l3_sub_report_data_json,
                                         index: index,
                                         keyVal: "0",
                                         popuWidth: width,
                                         level: 3,
                                         title: val,
+                                        rpt_key: rpt_key.toString(),
                                       ),
                                     ),
                                   )

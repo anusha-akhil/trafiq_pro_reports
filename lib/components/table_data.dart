@@ -12,13 +12,15 @@ class TableData extends StatefulWidget {
   double popuWidth;
   int level;
   String title;
+  String? rpt_key;
   TableData(
       {required this.decodd,
       required this.index,
       required this.keyVal,
       required this.popuWidth,
       required this.level,
-      required this.title});
+      required this.title,
+      this.rpt_key});
 
   @override
   State<TableData> createState() => _TableDataState();
@@ -62,13 +64,15 @@ class _TableDataState extends State<TableData> {
       newMp.add(element);
       filteredList.add(element);
     });
-    // filteredList = [
-    //   {"CRN40_BARCODE": 35, "CRY40_SALES": 813.56},
-    //   {"CRN40_BARCODE": "", "CRY40_SALES": 813.56}
-    // ];
-    // var element = newMp[0].keys.elementAt(0);
-    key = newMp[0].keys.toList().first;
-    li = key!.split('_');
+    // print("anuuu----------${widget.rpt_key}-------${widget.keyVal}----");
+    if (widget.keyVal != "2") {
+      if (widget.rpt_key.toString().isNotEmpty) {
+        int index = int.parse(widget.rpt_key!);
+        key = newMp[0].keys.elementAt(index);
+      }
+    }
+
+    print("key key----------$key");
     print("filteredList---${filteredList}");
     print("newMp---${newMp}");
 
@@ -109,8 +113,9 @@ class _TableDataState extends State<TableData> {
                             filteredList = value.isEmpty || value == " "
                                 ? newMp
                                 : newMp
-                                    .where(
-                                        (item) => item[key].startsWith(value))
+                                    .where((item) => item[key]
+                                        .toLowerCase()
+                                        .startsWith(value.toLowerCase()))
                                     .toList();
                             print("after filter-------$newMp");
                           });
@@ -153,7 +158,7 @@ class _TableDataState extends State<TableData> {
                             filled: true,
                             hintStyle:
                                 TextStyle(color: Colors.blue, fontSize: 13),
-                            hintText: "Search ${li[1]} here.. ",
+                            hintText: "Search here.. ",
                             fillColor: Colors.grey[100]),
                       ),
                     ),
@@ -271,9 +276,16 @@ class _TableDataState extends State<TableData> {
               if (widget.level != 3) {
                 print("selected------${itemList[r]}");
                 String val = itemList[r].values.toList().first.toString();
+                int index = int.parse(widget.rpt_key!);
+                String tit = itemList[r].values.elementAt(index);
                 print("val----$val");
                 Provider.of<Controller>(context, listen: false)
-                    .findLevelCriteria(context, widget.level, r, val);
+                    .findLevelCriteria(
+                  context,
+                  widget.level,
+                  r,
+                  val,tit
+                );
               }
 
               // LevelReportDetails popup = LevelReportDetails();
