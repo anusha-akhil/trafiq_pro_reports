@@ -21,17 +21,22 @@ class _DbSelectionState extends State<DbSelection> {
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     Provider.of<RegistrationController>(context, listen: false)
         .initDb(context, "");
-
-    // Provider.of<RegistrationController>(context, listen: false)
-    //     .getDatabasename(context);
-    // });
+    Provider.of<Controller>(context, listen: false).getDbName();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue,
       appBar: AppBar(
+        backgroundColor: Colors.blue,
+        elevation: 0,
         automaticallyImplyLeading: false,
+        title: Text(
+          "Year Selection",
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+        ),
       ),
       body: Consumer<RegistrationController>(
           builder: (context, value, child) => value.isdbLoading
@@ -59,7 +64,22 @@ class _DbSelectionState extends State<DbSelection> {
                                 builder: (context) => HomePage()),
                           );
                         },
-                        title: Text(value.db_list[index]["Year_Name"]),
+                        leading: Icon(Icons.currency_exchange_rounded),
+                        trailing: ElevatedButton(
+                            style:
+                                ElevatedButton.styleFrom(primary: Colors.green),
+                            onPressed: () {},
+                            child: Text(
+                              "Connect",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            )),
+                        title: Text(
+                          value.db_list[index]["Year_Name"],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
                       ),
                     );
                   })),

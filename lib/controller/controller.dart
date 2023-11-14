@@ -42,7 +42,7 @@ class Controller extends ChangeNotifier {
   List<Map<String, dynamic>> ledger = [];
   List<Map<String, dynamic>> daybook = [];
   List<Map<String, dynamic>> ledger_list = [];
-
+  String? dbn;
   List<Widget> listWidget = [];
   List<Widget> ledgerWidget = [];
 
@@ -778,8 +778,8 @@ class Controller extends ChangeNotifier {
     notifyListeners();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     yr = prefs.getString("yr_name");
+    dbn = prefs.getString("db_name");
     cName = prefs.getString("cname");
-
     isDbNameLoading = false;
     notifyListeners();
   }
