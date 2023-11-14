@@ -16,14 +16,20 @@ class DateFind {
   String? crntDateFormat;
   String? specialField;
   String? gen_condition;
+  DateTime? sdate;
+  DateTime? ldate;
 
   Future selectDateFind(BuildContext context, String dateType) async {
+    sdate = Provider.of<Controller>(context, listen: false).sdate;
+    ldate = Provider.of<Controller>(context, listen: false).ldate;
+    print("date-0--------${sdate!.day}----${sdate!.month}-----${sdate!.year}");
     crntDateFormat = DateFormat('dd-MMM-yyyy').format(currentDate);
     final DateTime? pickedDate = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2020),  
-        lastDate: DateTime(currentDate.year + 1),
+        // initialDate: DateTime.now(),
+        firstDate: DateTime(sdate!.year, sdate!.month, sdate!.day),
+        // lastDate: DateTime(currentDate.year + 1),
+        lastDate: DateTime(ldate!.year, ldate!.month, ldate!.day),
         builder: (BuildContext context, Widget? child) {
           return Theme(
               data: ThemeData.light().copyWith(
@@ -47,7 +53,7 @@ class DateFind {
       // fromDate = DateFormat(DateFormat.).format(currentDate);
 
       if (toDate == null) {
-        toDate =DateFormat('dd-MMM-yyyy').format(defaultDate);
+        toDate = DateFormat('dd-MMM-yyyy').format(defaultDate);
       }
     }
     if (dateType == "to date") {

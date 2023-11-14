@@ -109,7 +109,8 @@ class Level1ReportDetails {
                                                     right: 0),
                                                 child: Text(
                                                   value.fromDate == null
-                                                      ? todaydate.toString()
+                                                      ? value.lastdate
+                                                          .toString()
                                                       : value.fromDate
                                                           .toString(),
                                                   style: TextStyle(
@@ -136,7 +137,8 @@ class Level1ReportDetails {
                                                     right: 10.0),
                                                 child: Text(
                                                   value.todate == null
-                                                      ? todaydate.toString()
+                                                      ? value.lastdate
+                                                          .toString()
                                                       : value.todate.toString(),
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
@@ -165,13 +167,14 @@ class Level1ReportDetails {
 
                                           if (value.fromDate == null) {
                                             value.fromDate =
-                                                todaydate.toString();
+                                                value.lastdate.toString();
                                           } else {
                                             value.fromDate =
                                                 value.fromDate.toString();
                                           }
                                           if (value.todate == null) {
-                                            value.todate = todaydate.toString();
+                                            value.todate =
+                                                value.lastdate.toString();
                                           } else {
                                             value.todate =
                                                 value.todate.toString();

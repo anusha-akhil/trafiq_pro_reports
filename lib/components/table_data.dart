@@ -280,12 +280,7 @@ class _TableDataState extends State<TableData> {
                 String tit = itemList[r].values.elementAt(index);
                 print("val----$val");
                 Provider.of<Controller>(context, listen: false)
-                    .findLevelCriteria(
-                  context,
-                  widget.level,
-                  r,
-                  val,tit
-                );
+                    .findLevelCriteria(context, widget.level, r, val, tit);
               }
 
               // LevelReportDetails popup = LevelReportDetails();
@@ -341,7 +336,7 @@ class _TableDataState extends State<TableData> {
               colwidth = colwidth * 0.94;
             } else {
               colwidth = (datatbleWidth! * double.parse(wid) / 100);
-              colwidth = colwidth * 0.94;
+              colwidth = colwidth * 0.94; 
             }
           }
           print("key from datacell----$key");

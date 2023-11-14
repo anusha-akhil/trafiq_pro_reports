@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sql_conn/sql_conn.dart';
 import 'package:trafiqpro/controller/registration_controller.dart';
+import 'package:trafiqpro/screen/daybook_report.dart';
 import 'package:trafiqpro/screen/report_tabs.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import '../controller/controller.dart';
@@ -17,15 +18,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // List<Map<String, dynamic>> staffData = [
-  //   {"staff_id": "1", "name": "anusha"},
-  //   {"staff_id": "2", "name": "shilpa"},
-  //   {"staff_id": "3", "name": "danush"}
-  // ];
   String? selected;
-
   String? todaydate;
-
   DateTime now = DateTime.now();
   @override
   void initState() {
@@ -63,6 +57,9 @@ class _HomePageState extends State<HomePage> {
                 builder: (context, value, child) => InkWell(
                       onTap: () {
                         Navigator.pop(context);
+                        // Provider.of<RegistrationController>(context,
+                        //         listen: false)
+                        //     .initDb(context, "");
                       },
                       child: value.yr == null
                           ? Container()
@@ -210,7 +207,8 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.white,
                     ))
                   : DashboardReport(),
-              ReportTabs()
+              ReportTabs(),
+              // AccountReports()
             ],
           ),
         ),

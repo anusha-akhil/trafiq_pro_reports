@@ -48,7 +48,6 @@ class _DbSelectionState extends State<DbSelection> {
                               await SharedPreferences.getInstance();
                           prefs.setString("db_name",
                               value.db_list[index]["Data_Name"].toString());
-
                           prefs.setString("yr_name",
                               value.db_list[index]["Year_Name"].toString());
                           Provider.of<Controller>(context, listen: false)

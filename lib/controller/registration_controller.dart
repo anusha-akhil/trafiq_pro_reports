@@ -245,12 +245,16 @@ class RegistrationController extends ChangeNotifier {
         },
       );
       await SqlConn.connect(
-          ip: ip!,
-          port: port!,
-          databaseName: db!,
-          username: un!,
-          password: pw!);
+          ip: ip!, port: port!, databaseName: db!, username: un!, password: pw!
+          // ip:"192.168.18.37",
+          // port: "1433", 
+          // databaseName: "epulze",
+          // username: "sa",
+          // password: "1"
+
+          );
       debugPrint("Connected!");
+
       getDatabasename(context, type);
 
       // getDatabasename(context);
