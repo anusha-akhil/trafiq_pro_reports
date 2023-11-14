@@ -69,7 +69,9 @@ class _ReportTabsState extends State<ReportTabs> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CustomerList(map: list[ind],)),
+                              builder: (context) => CustomerList(
+                                    map: list[ind],
+                                  )),
                         );
                       } else {
                         value.getSubReport(context, list[ind]["Rpt_ID"]);

@@ -55,7 +55,7 @@ class Level1ReportDetails {
                 Flexible(
                   child: Text(
                     map["Rpt_Name"],
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                 ),
                 InkWell(
@@ -114,9 +114,10 @@ class Level1ReportDetails {
                                                       : value.fromDate
                                                           .toString(),
                                                   style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.grey[700],
-                                                  ),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.grey[700],
+                                                      fontSize: 12),
                                                 ),
                                               ),
                                             ],
@@ -134,7 +135,7 @@ class Level1ReportDetails {
                                                       Icons.calendar_month)),
                                               Padding(
                                                 padding: const EdgeInsets.only(
-                                                    right: 10.0),
+                                                    right: 0.0),
                                                 child: Text(
                                                   value.todate == null
                                                       ? value.lastdate
@@ -142,6 +143,7 @@ class Level1ReportDetails {
                                                       : value.todate.toString(),
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
                                                     color: Colors.grey[700],
                                                   ),
                                                 ),
@@ -211,7 +213,7 @@ class Level1ReportDetails {
                                       "No Data Found!!!",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 19),
+                                          fontSize: 14),
                                     ),
                                   )
                                 : Expanded(

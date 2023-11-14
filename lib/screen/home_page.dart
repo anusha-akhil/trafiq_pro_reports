@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
     todaydate = DateFormat('dd-MMM-yyyy').format(now);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<Controller>(context, listen: false)
-          .getBranches(context, todaydate.toString());
+          .getBranches(context, );
       Provider.of<Controller>(context, listen: false).getDbName();
     });
   }
@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
           builder: (context, value, child) => Column(
             children: [
               Container(
-                height: size.height * 0.05,
+                // height: size.height * 0.05,
                 // color: Colors.grey[200],
                 color: Theme.of(context).primaryColor,
                 child: Row(
@@ -87,14 +87,14 @@ class _HomePageState extends State<HomePage> {
                     value.branch_list.length == 0
                         ? Container()
                         : Container(
-                            width: size.width * 0.45,
+                            // width: size.width * 0.45,
                             // decoration: BoxDecoration(
                             //   border: Border.all(
                             //       color: Colors.white),
                             //   borderRadius: BorderRadius.circular(28),
                             // ),
                             // width: size.width * 0.4,
-                            height: size.height * 0.04,
+                            // height: size.height * 0.04,
 
                             child: ButtonTheme(
                               // alignedDropdown: true,
@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                                   child: Text(
                                     value.selected.toString(),
                                     style: TextStyle(
-                                        fontSize: 14, color: Colors.blue),
+                                        fontSize: 12, color: Colors.blue),
                                   ),
                                 ),
                                 isExpanded: false,
@@ -173,9 +173,10 @@ class _HomePageState extends State<HomePage> {
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0, right: 8),
                             child: Text(
-                              value.dashDate == null
-                                  ? todaydate.toString()
-                                  : value.dashDate.toString(),
+                              value.dashDate.toString(),
+                              // value.dashDate == null
+                              //     ? todaydate.toString()
+                              //     : value.dashDate.toString(),
                               style:
                                   TextStyle(color: Colors.white, fontSize: 13),
                             ),

@@ -31,7 +31,7 @@ class _DashboardReportState extends State<DashboardReport> {
           // ),
           // SizedBox(height: size.height*0.01,),
           Container(
-            height: size.height * 0.19,
+            height: size.height * 0.23,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               // physics: ScrollPhysics(),
@@ -140,6 +140,7 @@ class _DashboardReportState extends State<DashboardReport> {
           padding: const EdgeInsets.all(28.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 map["Rpt_Name"].toString().toUpperCase(),
@@ -171,11 +172,14 @@ class _DashboardReportState extends State<DashboardReport> {
     print("values-------$valueMap");
 
     return Padding(
-      padding: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.all(8.0),
       child: Container(
         child: Padding(
-          padding: const EdgeInsets.all(28.0),
+          padding:
+              const EdgeInsets.only(left: 18.0, right: 18, top: 8, bottom: 8),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 map["Rpt_Name"].toString().toUpperCase(),

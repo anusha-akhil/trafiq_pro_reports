@@ -74,7 +74,7 @@ class Controller extends ChangeNotifier {
   }
 
 ////////////////////////////////////////////////////////
-  getHome(BuildContext context, String date, String branch) {
+  getHome(BuildContext context, String branch, String type) {
     NetConnection.networkConnection(context).then((value) async {
       if (value == true) {
         try {
@@ -83,7 +83,7 @@ class Controller extends ChangeNotifier {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           String? cid = await prefs.getString("cid");
           String? db = prefs.getString("db_name");
-          print("home pram------$cid-----$db");
+          print("home pram-----$cid-----$db");
           var res = await SqlConn.readData("Flt_Load_Home '$db','$cid'");
           print("response map--------$res");
           var valueMap = json.decode(res);
@@ -93,23 +93,29 @@ class Controller extends ChangeNotifier {
           result.clear();
           sdate =
               new DateFormat("yyyy-MM-dd hh:mm:ss").parse(valueMap[0]["SDATE"]);
-
           ldate =
               new DateFormat("yyyy-MM-dd hh:mm:ss").parse(valueMap[0]["LDATE"]);
-
+          print("last date--------$ldate");
           if (ldate!.isAfter(DateTime.now())) {
             lastdate = DateFormat('dd-MMM-yyyy').format(DateTime.now());
+            if (type == "init") {
+              dashDate = DateFormat('dd-MMM-yyyy').format(DateTime.now());
+              d = DateTime.now();
+            }
           } else {
             lastdate = DateFormat('dd-MMM-yyyy').format(ldate!);
+            if (type == "init") {
+              dashDate = DateFormat('dd-MMM-yyyy').format(ldate!);
+              d = ldate!;
+            }
           }
-
           print("sdate------------ldate-----$sdate----$ldate");
           notifyListeners();
           accounts_report.clear();
           for (var item in valueMap) {
             if (item["Rpt_Type"] == 0) {
-              getDashboardTileVal(
-                  context, item["Rpt_Script"], item, date, branch);
+              getDashboardTileVal(context, item["Rpt_Script"], item,
+                  dashDate.toString(), branch);
             } else {
               result.add(item);
               // getReportTileVal(context, item["Rpt_Script"], item);
@@ -633,21 +639,28 @@ class Controller extends ChangeNotifier {
 
   ///////////////////////////////////////////////////////////////////
   findDate(DateTime date, String type, BuildContext context) async {
+    print("new d----------------$date---$type-");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? brId = await prefs.getString("br_id");
     if (type == "prev") {
+      // print("new d----------------$date----");
+
       if (DateTime(sdate!.year, sdate!.month, sdate!.day) !=
           DateTime(date.year, date.month, date.day)) {
         d = DateTime(date.year, date.month, date.day - 1);
         dashDate = DateFormat('dd-MMM-yyyy').format(d);
-        getHome(context, dashDate.toString(), brId.toString());
+        getHome(context, brId.toString(), "");
+        notifyListeners();
       }
     } else {
       if (DateTime(ldate!.year, ldate!.month, ldate!.day) !=
           DateTime(date.year, date.month, date.day)) {
         d = DateTime(date.year, date.month, date.day + 1);
         dashDate = DateFormat('dd-MMM-yyyy').format(d);
-        getHome(context, dashDate.toString(), brId.toString());
+        print("new d----------------$d--$dashDate--$date");
+
+        getHome(context, brId.toString(), "");
+        notifyListeners();
       }
 
       // if (DateTime(
@@ -662,7 +675,9 @@ class Controller extends ChangeNotifier {
   }
 
   /////////////////////////////////////////////////////////////////
-  getBranches(BuildContext context, String date) async {
+  getBranches(
+    BuildContext context,
+  ) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? cid = await prefs.getString("cid");
     String? db = prefs.getString("db_name");
@@ -672,6 +687,7 @@ class Controller extends ChangeNotifier {
 
     var valueMap = json.decode(res);
     branch_list.clear();
+
     if (valueMap != null) {
       for (var item in valueMap) {
         branch_list.add(item);
@@ -679,16 +695,16 @@ class Controller extends ChangeNotifier {
       selected = branch_list[0]['Br_Name'];
       branchid = branch_list[0]['Br_ID'].toString();
       prefs.setString("br_id", branchid.toString());
-      getHome(context, date, branchid.toString());
+      getHome(context, branchid.toString(), "init");
     } else {
       prefs.setString("br_id", "0");
-
-      getHome(context, date, "0");
+      getHome(context, "0", "init");
     }
 
     notifyListeners();
   }
 
+//////////////////////////////////////////////////////////////////////////////////////////
   setDropdowndata(String s, String date, BuildContext context) async {
     // branchid = s;
     for (int i = 0; i < branch_list.length; i++) {
@@ -700,7 +716,7 @@ class Controller extends ChangeNotifier {
         notifyListeners();
       }
     }
-    getHome(context, date, branchid.toString());
+    getHome(context, branchid.toString(), "");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("br_id", branchid.toString());
     notifyListeners();
@@ -740,13 +756,15 @@ class Controller extends ChangeNotifier {
           );
         },
       );
+
       await SqlConn.connect(
           ip: ip!,
           port: port!,
           databaseName: db1,
           username: un!,
           password: pw!);
-      debugPrint("Connected!");
+
+      debugPrint("Connected!----$ip------$db1");
     } catch (e) {
       debugPrint(e.toString());
     } finally {
